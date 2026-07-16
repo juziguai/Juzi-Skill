@@ -1,0 +1,377 @@
+{
+  "meta": {
+    "title": "深圳出发｜厦门 3 天 2 夜周末攻略（示例）",
+    "description": "从深圳乘高铁前往厦门的三天两夜互动旅游攻略示例。",
+    "origin": "深圳",
+    "destination": "厦门",
+    "startDate": "2026-07-17",
+    "endDate": "2026-07-19",
+    "timezone": "Asia/Shanghai",
+    "travelers": "2 位成人",
+    "transportMode": "高铁",
+    "verifiedAt": "2026-07-14 20:00",
+    "slug": "shenzhen-xiamen-weekend-sample",
+    "sampleOnly": true,
+    "offline": true,
+    "assetBudget": {
+      "maxImageKiB": 320,
+      "maxTotalImagesKiB": 2500,
+      "maxOutputKiB": 3500
+    },
+    "theme": {
+      "ink": "#123331",
+      "paper": "#f4efdf",
+      "coral": "#f26d50",
+      "teal": "#11877d",
+      "yellow": "#f5c64d"
+    }
+  },
+  "hero": {
+    "eyebrow": "WEEKEND ESCAPE · SAMPLE",
+    "headline": "把三天周末交给海风",
+    "summary": "周五高铁抵达老城，周六早船上鼓浪屿，周日沿沙坡尾慢慢收尾。示例中的车票、天气与营业信息必须在真实任务中重新联网核实。",
+    "coverImage": "",
+    "coverImageAlt": "厦门海岸与老城旅行氛围视觉示意",
+    "stats": [
+      { "label": "往返", "value": "高铁直达" },
+      { "label": "行程", "value": "3 天 2 夜" },
+      { "label": "住宿", "value": "老城连住" },
+      { "label": "节奏", "value": "每天一条主线" }
+    ]
+  },
+  "quickFacts": [
+    { "label": "去程", "value": "D674 · 07:05", "note": "深圳北 → 厦门" },
+    { "label": "返程", "value": "D691 · 16:58", "note": "厦门 → 深圳北" },
+    { "label": "先订", "value": "车票与船票", "note": "酒店其次，景点按预约规则" },
+    { "label": "预算", "value": "¥1,650–2,200", "note": "两人同住 · 人均示例" }
+  ],
+  "checklist": [
+    { "id": "rail", "label": "购买往返高铁票", "note": "下单时复核余票与席别", "url": "https://kyfw.12306.cn/otn/leftTicket/init" },
+    { "id": "ferry", "label": "预约鼓浪屿船票", "note": "核对码头、班次与证件", "url": "https://www.xmferry.com/" },
+    { "id": "hotel", "label": "确认两晚酒店", "note": "核对外窗、含税价和取消规则", "url": "https://www.mercurehotels.com/" },
+    { "id": "weather", "label": "出发前查看天气", "note": "雷雨天准备折叠伞和防滑鞋", "url": "https://weather.cma.cn/" }
+  ],
+  "transport": {
+    "outbound": [
+      {
+        "service": "D674",
+        "from": "深圳北",
+        "to": "厦门",
+        "depart": "07:05",
+        "arrive": "10:50",
+        "duration": "3 小时 45 分",
+        "class": "二等座",
+        "price": "¥221 / 人",
+        "status": "示例快照，真实任务须重查",
+        "bookingUrl": "https://kyfw.12306.cn/otn/leftTicket/init"
+      }
+    ],
+    "return": [
+      {
+        "service": "D691",
+        "from": "厦门",
+        "to": "深圳北",
+        "depart": "16:58",
+        "arrive": "20:26",
+        "duration": "3 小时 28 分",
+        "class": "二等座",
+        "price": "¥221 / 人",
+        "status": "示例快照，真实任务须重查",
+        "bookingUrl": "https://kyfw.12306.cn/otn/leftTicket/init"
+      }
+    ],
+    "notes": [
+      "至少提前 45 分钟抵达深圳北站。",
+      "返程当天从沙坡尾前往厦门站预留雨天拥堵缓冲。",
+      "余票只代表核实时快照，以下单页为准。"
+    ]
+  },
+  "days": [
+    {
+      "day": 1,
+      "date": "2026-07-17",
+      "weekday": "周五",
+      "title": "老城第一口",
+      "theme": "高铁落地后只走中山路—八市一线",
+      "stops": [
+        {
+          "time": "10:50",
+          "name": "厦门站抵达",
+          "type": "交通",
+          "duration": "约 30 分钟",
+          "description": "打车或地铁前往老城酒店，先寄存行李。",
+          "address": "厦门站",
+          "ticket": "已含高铁票",
+          "tips": ["雨天优先打车", "不要拖箱穿八市"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E5%8E%A6%E9%97%A8%E7%AB%99",
+          "image": "",
+          "imageAlt": "厦门站到达场景视觉示意"
+        },
+        {
+          "time": "12:30",
+          "name": "月华沙茶面",
+          "type": "午餐",
+          "duration": "约 50 分钟",
+          "description": "第一顿只点一碗沙茶面，两人再分一份小吃。",
+          "address": "镇邦路 78 号",
+          "ticket": "按配料计价",
+          "tips": ["先问配料价格", "花生过敏者提前说明"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E6%9C%88%E5%8D%8E%E6%B2%99%E8%8C%B6%E9%9D%A2",
+          "image": "",
+          "imageAlt": "厦门沙茶面菜品视觉示意"
+        },
+        {
+          "time": "16:00",
+          "name": "八市与中山路",
+          "type": "漫步",
+          "duration": "约 3 小时",
+          "description": "八市看市井、阿杰五香小份尝鲜，再沿中山路散步。",
+          "address": "开禾路—中山路",
+          "ticket": "免费",
+          "tips": ["市场地面湿滑", "海鲜先问计价与加工费"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E5%8E%A6%E9%97%A8%E7%AC%AC%E5%85%AB%E5%B8%82%E5%9C%BA",
+          "image": "",
+          "imageAlt": "厦门八市老街视觉示意"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2026-07-18",
+      "weekday": "周六",
+      "title": "早船上岛",
+      "theme": "鼓浪屿按预约时段走，不把景点塞满",
+      "stops": [
+        {
+          "time": "06:45",
+          "name": "酒店出发去东渡码头",
+          "type": "接驳",
+          "duration": "预留 60 分钟",
+          "description": "按船票要求提前抵达，携带购票证件原件。",
+          "address": "厦鼓码头",
+          "ticket": "船票另购",
+          "tips": ["不要走错本地居民码头", "雨天提前叫车"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E5%8E%A6%E9%97%A8%E9%BC%93%E6%B5%AA%E5%B1%BF%E7%A0%81%E5%A4%B4",
+          "image": "",
+          "imageAlt": "厦门轮渡码头视觉示意"
+        },
+        {
+          "time": "09:00",
+          "name": "日光岩—菽庄花园",
+          "type": "景点",
+          "duration": "约 4 小时",
+          "description": "体力最好时先登高，午前转入菽庄花园与钢琴博物馆。",
+          "address": "鼓浪屿",
+          "ticket": "按官方联票或单票",
+          "tips": ["穿防滑鞋", "雷雨时取消登高"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E9%BC%93%E6%B5%AA%E5%B1%BF%E6%97%A5%E5%85%89%E5%B2%A9",
+          "image": "",
+          "imageAlt": "鼓浪屿日光岩与红屋顶视觉示意"
+        },
+        {
+          "time": "15:30",
+          "name": "返程与鹭江夜景",
+          "type": "返航",
+          "duration": "约 3 小时",
+          "description": "错峰离岛，回酒店休息后再看鹭江夜景。",
+          "address": "三丘田码头—鹭江道",
+          "ticket": "返程通常含在船票内，以票面为准",
+          "tips": ["确认返程码头", "夜宵按胃口二选一"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E9%B9%AD%E6%B1%9F%E9%81%93",
+          "image": "",
+          "imageAlt": "鹭江夜景视觉示意"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2026-07-19",
+      "weekday": "周日",
+      "title": "沙坡尾慢收尾",
+      "theme": "上午看海与街区，午后从容取行李返程",
+      "stops": [
+        {
+          "time": "08:30",
+          "name": "乌糖沙茶面",
+          "type": "早餐",
+          "duration": "约 60 分钟",
+          "description": "趁上午营业先吃，配料控制在两到三种。",
+          "address": "民族路 76 号",
+          "ticket": "自选配料计价",
+          "tips": ["可能提前售完", "与前两天沙茶面二选一"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E4%B9%8C%E7%B3%96%E6%B2%99%E8%8C%B6%E9%9D%A2",
+          "image": "",
+          "imageAlt": "厦门海鲜沙茶面视觉示意"
+        },
+        {
+          "time": "10:00",
+          "name": "沙坡尾—演武大桥",
+          "type": "街区",
+          "duration": "约 3 小时",
+          "description": "沿避风坞慢走，保留咖啡和躲雨时间。",
+          "address": "沙坡尾艺术西区",
+          "ticket": "免费",
+          "tips": ["正午注意防晒", "雷雨时改去室内展馆"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E6%B2%99%E5%9D%A1%E5%B0%BE",
+          "image": "",
+          "imageAlt": "厦门沙坡尾避风坞视觉示意"
+        },
+        {
+          "time": "15:30",
+          "name": "前往厦门站",
+          "type": "返程",
+          "duration": "预留 90 分钟",
+          "description": "酒店取行李后前往厦门站，提前完成安检候车。",
+          "address": "厦门站",
+          "ticket": "D691 示例",
+          "tips": ["打车拥堵时改乘地铁", "核对检票口"],
+          "mapUrl": "https://uri.amap.com/search?keyword=%E5%8E%A6%E9%97%A8%E7%AB%99",
+          "image": "",
+          "imageAlt": "厦门站返程视觉示意"
+        }
+      ]
+    }
+  ],
+  "ferry": {
+    "title": "鼓浪屿船票",
+    "summary": "游客通常从东渡一带游客码头乘船，具体航线、码头和班次以购票页为准。",
+    "routes": [
+      { "label": "去程示例", "value": "厦鼓码头 → 三丘田码头", "note": "按预约班次提前到达" },
+      { "label": "返程示例", "value": "三丘田 / 内厝澳 → 厦门本岛", "note": "以票面和现场安排为准" }
+    ],
+    "bookingUrl": "https://www.xmferry.com/",
+    "notes": ["使用购票证件原件", "不要把码头名称只记成“轮渡码头”"]
+  },
+  "hotels": [
+    {
+      "tier": "首选",
+      "name": "厦门外滩美居酒店",
+      "area": "中山路—鹭江道",
+      "price": "¥600–900 / 晚（示例）",
+      "reason": "去八市、中山路和鹭江道方便，两晚不换店。",
+      "bookingUrl": "https://www.mercurehotels.com/",
+      "image": "",
+      "imageAlt": "厦门老城酒店客房视觉示意"
+    },
+    {
+      "tier": "经济",
+      "name": "老城交通便利型酒店",
+      "area": "镇海路地铁站附近",
+      "price": "¥350–550 / 晚（示例）",
+      "reason": "控制预算，重点核对外窗、隔音和取消规则。",
+      "bookingUrl": "https://uri.amap.com/search?keyword=%E9%95%87%E6%B5%B7%E8%B7%AF%E9%85%92%E5%BA%97",
+      "image": "",
+      "imageAlt": "厦门经济型酒店视觉示意"
+    },
+    {
+      "tier": "升级",
+      "name": "沙坡尾海景型酒店",
+      "area": "演武西路附近",
+      "price": "¥1,200–2,000 / 晚（示例）",
+      "reason": "海景体验更强，但前往八市和游客码头不如老城方便。",
+      "bookingUrl": "https://uri.amap.com/search?keyword=%E6%B2%99%E5%9D%A1%E5%B0%BE%E9%85%92%E5%BA%97",
+      "image": "",
+      "imageAlt": "厦门海景酒店视觉示意"
+    }
+  ],
+  "foods": [
+    {
+      "mark": "01",
+      "name": "月华沙茶面",
+      "address": "镇邦路 78 号",
+      "order": "猪肝＋鸭血＋豆干 / 鱼丸",
+      "tip": "配料逐项计价，先问价；与乌糖二选一。",
+      "image": "",
+      "imageAlt": "厦门沙茶面菜品视觉示意",
+      "sourceUrl": "https://guide.michelin.com/sg/zh_CN/fujian-province/xiamen_1031934/restaurant/yue-hua-sha-cha-mian"
+    },
+    {
+      "mark": "02",
+      "name": "黄则和花生汤",
+      "address": "中山路 22—24 号",
+      "order": "花生汤＋油条",
+      "tip": "偏甜，两人共享一份更合适。",
+      "image": "",
+      "imageAlt": "厦门花生汤与油条菜品视觉示意",
+      "sourceUrl": "https://www.fujian.gov.cn/"
+    },
+    {
+      "mark": "03",
+      "name": "八市阿杰五香",
+      "address": "开禾路 111 号",
+      "order": "现炸五香卷",
+      "tip": "一人一根足够，八市地面湿滑。",
+      "image": "",
+      "imageAlt": "厦门五香卷菜品视觉示意",
+      "sourceUrl": "https://www.amap.com/"
+    },
+    {
+      "mark": "04",
+      "name": "珍珍海蛎煎",
+      "address": "厦禾路 184 号",
+      "order": "海蛎煎＋虾丸汤",
+      "tip": "与鸭肉粥二选一，避免一站吃撑。",
+      "image": "",
+      "imageAlt": "厦门海蛎煎菜品视觉示意",
+      "sourceUrl": "https://guide.michelin.com/sg/zh_CN/fujian-province/xiamen_1031934/restaurant/zhen-zhen-hai-li-jian"
+    }
+  ],
+  "budget": {
+    "summary": "按高铁二等座、普通船票、中端酒店两晚和常规餐饮估算；购物与高价海鲜不计。",
+    "modes": [
+      {
+        "id": "share",
+        "label": "2 人同住 · 人均",
+        "total": "¥1,650–2,200",
+        "note": "示例区间，真实任务需重查酒店和票价",
+        "items": [
+          { "label": "高铁往返", "amount": "¥442", "weight": 58 },
+          { "label": "酒店两晚", "amount": "¥600–900", "weight": 88 },
+          { "label": "船票与景点", "amount": "¥125", "weight": 28 },
+          { "label": "餐饮", "amount": "¥320–500", "weight": 52 },
+          { "label": "市内交通", "amount": "¥150–240", "weight": 36 }
+        ]
+      },
+      {
+        "id": "solo",
+        "label": "1 人独住 · 人均",
+        "total": "¥2,250–3,100",
+        "note": "酒店不分摊，其他项目按个人估算",
+        "items": [
+          { "label": "高铁往返", "amount": "¥442", "weight": 40 },
+          { "label": "酒店两晚", "amount": "¥1,200–1,800", "weight": 94 },
+          { "label": "船票与景点", "amount": "¥125", "weight": 22 },
+          { "label": "餐饮", "amount": "¥320–500", "weight": 38 },
+          { "label": "市内交通", "amount": "¥150–240", "weight": 28 }
+        ]
+      }
+    ]
+  },
+  "weather": {
+    "latitude": 24.4798,
+    "longitude": 118.0894,
+    "live": true,
+    "sourceUrl": "https://open-meteo.com/",
+    "days": [
+      { "date": "2026-07-17", "label": "周五 17", "summary": "雷阵雨", "high": 32, "low": 26, "rainProbability": 84 },
+      { "date": "2026-07-18", "label": "周六 18", "summary": "雷阵雨", "high": 33, "low": 27, "rainProbability": 70 },
+      { "date": "2026-07-19", "label": "周日 19", "summary": "雷阵雨", "high": 32, "low": 27, "rainProbability": 66 }
+    ]
+  },
+  "packing": [
+    { "category": "证件与票", "items": ["身份证原件", "高铁订单", "船票订单", "酒店确认单"] },
+    { "category": "天气", "items": ["折叠伞", "轻薄雨衣", "防晒", "防滑鞋"] },
+    { "category": "随身", "items": ["充电宝", "水杯", "常用药", "小包而非大行李箱"] }
+  ],
+  "sources": [
+    { "label": "铁路 12306", "url": "https://kyfw.12306.cn/otn/leftTicket/init", "note": "车次、票价和下单复核入口", "verifiedAt": "2026-07-14" },
+    { "label": "厦门轮渡", "url": "https://www.xmferry.com/", "note": "鼓浪屿航线和购票规则", "verifiedAt": "2026-07-14" },
+    { "label": "Open-Meteo", "url": "https://open-meteo.com/", "note": "天气快照与主动刷新数据", "verifiedAt": "2026-07-14" },
+    { "label": "福建米其林指南", "url": "https://guide.michelin.com/sg/zh_CN/fujian-province/xiamen_1031934/restaurants", "note": "餐饮推荐参考", "verifiedAt": "2026-07-14" }
+  ],
+  "disclaimers": [
+    "这是结构与视觉回归用示例，真实任务不得直接复用其中的时刻、余票、价格、天气或营业信息。",
+    "车票、船票、酒店房态和天气会变化，以下单或出发前官方页面为准。",
+    "菜品与景点图片如由 AI 生成，均为视觉示意，实际体验以现场为准。"
+  ]
+}

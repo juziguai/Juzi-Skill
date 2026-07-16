@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN" style="__THEME_VARS__">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="__DESCRIPTION__">
+  <meta name="color-scheme" content="light">
+  <title>__TITLE__</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:72px}
+    body{margin:0;color:var(--ink);background:var(--paper);font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+    button,input{font:inherit}
+    button,a{-webkit-tap-highlight-color:transparent}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%}
+    h1,h2,h3,p{margin-top:0}
+    :focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+    .shell{width:min(1180px,calc(100% - 48px));margin-inline:auto}
+    .sample-banner{padding:9px 20px;color:#fff;background:var(--coral);font-size:12px;font-weight:900;letter-spacing:.08em;text-align:center}
+    .scroll-progress{position:fixed;z-index:60;top:0;left:0;width:100%;height:4px;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--coral),var(--yellow),#83d8c8);pointer-events:none}
+    .hero{position:relative;min-height:760px;display:grid;align-items:center;overflow:hidden;color:#fff;background:#123331}
+    .hero::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(110deg,rgba(11,44,42,.97) 12%,rgba(13,58,55,.88) 55%,rgba(18,51,49,.58))}
+    .hero::after{content:"";position:absolute;right:-9vw;bottom:-34vw;width:68vw;height:68vw;border:1px solid rgba(255,255,255,.16);border-radius:50%;box-shadow:0 0 0 8vw rgba(255,255,255,.025),0 0 0 18vw rgba(255,255,255,.02)}
+    .hero-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85) contrast(1.05)}
+    .hero-atmosphere{position:absolute;inset:0;z-index:1;pointer-events:none}
+    .hero-atmosphere i{position:absolute;width:220px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);transform:rotate(-12deg)}
+    .hero-atmosphere i:nth-child(1){top:23%;right:10%;width:380px}.hero-atmosphere i:nth-child(2){top:42%;right:-3%;width:250px}.hero-atmosphere i:nth-child(3){bottom:18%;left:44%;width:310px}
+    .hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.35fr .65fr;gap:80px;align-items:end;padding:150px 0 110px}
+    .eyebrow,.kicker{margin-bottom:20px;color:var(--yellow);font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+    .hero h1{max-width:760px;margin-bottom:26px;font-family:Georgia,"Songti SC",serif;font-size:clamp(62px,8vw,122px);font-weight:400;letter-spacing:-.06em;line-height:.9}
+    .hero-summary{max-width:680px;margin-bottom:32px;color:rgba(255,255,255,.72);font-size:18px;line-height:1.8}
+    .hero-dates{display:flex;align-items:center;gap:18px;font-family:Georgia,serif;font-size:15px;letter-spacing:.08em}.hero-dates i{width:70px;height:1px;background:var(--coral)}
+    .hero-stats{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.22);background:rgba(11,39,38,.46);backdrop-filter:blur(10px)}
+    .hero-stats div{min-height:118px;padding:24px;border-right:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15)}
+    .hero-stats div:nth-child(2n){border-right:0}.hero-stats div:nth-last-child(-n+2){border-bottom:0}
+    .hero-stats span{display:block;color:rgba(255,255,255,.5);font-size:10px;font-weight:900;letter-spacing:.1em}.hero-stats strong{display:block;margin-top:13px;font-family:Georgia,"Songti SC",serif;font-size:20px;font-weight:400}
+    .section-nav{position:sticky;z-index:40;top:0;border-bottom:1px solid rgba(18,51,49,.35);background:rgba(244,239,223,.94);backdrop-filter:blur(14px)}
+    .section-nav .shell{display:flex;overflow-x:auto;scrollbar-width:none}.section-nav .shell::-webkit-scrollbar{display:none}
+    .section-nav a{flex:0 0 auto;padding:20px 19px;border-right:1px solid rgba(18,51,49,.16);font-size:12px;font-weight:900;white-space:nowrap;transition:color .2s,background .2s}
+    .section-nav a:first-child{border-left:1px solid rgba(18,51,49,.16)}.section-nav a:hover,.section-nav a.active{color:#fff;background:var(--ink)}
+    .section{padding:96px 0;border-bottom:1px solid rgba(18,51,49,.16)}
+    .section-heading{display:grid;grid-template-columns:1.2fr .8fr;gap:70px;align-items:end;margin-bottom:48px}
+    .section-heading h2{margin-bottom:0;font-family:Georgia,"Songti SC",serif;font-size:clamp(44px,5vw,76px);font-weight:400;letter-spacing:-.05em;line-height:1}
+    .section-heading>p{max-width:490px;margin:0;color:#61706c;font-size:14px}.section-heading.inverse h2{color:#fff}.section-heading.inverse>p{color:rgba(255,255,255,.6)}
+    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+    .quick-grid article{min-height:170px;padding:25px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:rgba(255,255,255,.36)}
+    .quick-grid span,.quick-grid small{display:block}.quick-grid span{color:var(--teal);font-size:10px;font-weight:900;letter-spacing:.12em}.quick-grid strong{display:block;margin:20px 0 10px;font-family:Georgia,"Songti SC",serif;font-size:24px;font-weight:400}.quick-grid small{color:#69736f;font-size:11px}
+    .checklist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+    .check-card{position:relative;display:flex;gap:13px;min-height:126px;padding:20px;border:1px solid rgba(18,51,49,.35);background:#fffaf0;cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .check-card:hover{transform:translateY(-3px);box-shadow:5px 5px 0 rgba(18,51,49,.18)}.check-card input{position:absolute;opacity:0;pointer-events:none}
+    .check-box{flex:0 0 20px;width:20px;height:20px;border:1px solid var(--ink);background:#fff}.check-card input:checked+.check-box{background:var(--teal);box-shadow:inset 0 0 0 4px #fff}
+    .check-card strong,.check-card small{display:block}.check-card strong{font-size:13px}.check-card small{margin-top:6px;color:#73807c;font-size:10px}.check-card:has(input:checked){background:#e4f1ec}
+    .mini-link,.text-link{display:inline-flex;margin-top:12px;color:var(--teal);font-size:10px;font-weight:900}.mini-link:hover,.text-link:hover{text-decoration:underline}
+    .transport-section{background:#fffaf0}
+    .ticket-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}.ticket-card{position:relative;padding:30px;border:1px solid var(--ink);background:var(--ink);color:#fff;box-shadow:9px 9px 0 var(--coral);overflow:hidden}.ticket-card::after{content:"";position:absolute;right:-50px;top:-70px;width:190px;height:190px;border:1px solid rgba(255,255,255,.1);border-radius:50%}
+    .ticket-label{display:flex;justify-content:space-between;gap:18px;color:#83d8c8;font-size:10px;font-weight:900}.ticket-label small{color:rgba(255,255,255,.48);font-weight:600}.service-number{display:block;margin:16px 0 25px;font-family:Georgia,serif;font-size:55px;line-height:1}
+    .ticket-route{display:grid;grid-template-columns:1fr 80px 1fr;gap:18px;align-items:center;padding:23px 0;border-top:1px dashed rgba(255,255,255,.2);border-bottom:1px dashed rgba(255,255,255,.2)}.ticket-route div:last-child{text-align:right}.ticket-route b,.ticket-route span{display:block}.ticket-route b{font-size:23px}.ticket-route span{color:rgba(255,255,255,.55);font-size:11px}.ticket-route i{height:1px;background:var(--yellow);position:relative}.ticket-route i::after{content:"";position:absolute;right:0;top:-3px;border-left:6px solid var(--yellow);border-top:3px solid transparent;border-bottom:3px solid transparent}
+    .ticket-meta{display:flex;align-items:center;gap:15px;margin-top:22px;font-size:11px}.ticket-meta strong{margin-left:auto;color:var(--yellow);font-size:16px}.button-link,.action-button{display:inline-flex;align-items:center;justify-content:center;margin-top:22px;min-height:44px;padding:0 18px;border:1px solid currentColor;color:#fff;background:var(--coral);font-size:11px;font-weight:900;cursor:pointer}.button-link:hover,.action-button:hover{filter:brightness(1.05)}
+    .transport-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:34px 0 0;padding:0;list-style:none}.transport-notes li{padding:17px;border-left:4px solid var(--yellow);background:#fff;font-size:11px}
+    .days-section{color:#fff;background:#193836}
+    .days-stack{display:grid;gap:44px}.day-card{color:var(--ink);background:#fffaf0;border:1px solid rgba(255,255,255,.35);box-shadow:12px 12px 0 rgba(5,22,21,.34)}
+    .day-card>header{display:grid;grid-template-columns:180px 1fr 1fr;gap:30px;align-items:center;padding:30px 34px;border-bottom:1px solid var(--ink);background:var(--yellow)}.day-card>header span,.day-card>header strong{display:block}.day-card>header span{font-size:10px;font-weight:900;letter-spacing:.12em}.day-card>header strong{font-family:Georgia,serif;font-size:17px}.day-card>header h3{margin:0;font-family:Georgia,"Songti SC",serif;font-size:32px;font-weight:400}.day-card>header p{margin:0;font-size:12px}
+    .route-strip{display:flex;align-items:center;gap:10px;padding:16px 34px;overflow-x:auto;border-bottom:1px solid rgba(18,51,49,.2);color:var(--teal);font-size:10px;font-weight:900;white-space:nowrap}.route-strip i{color:var(--coral)}
+    .timeline{margin:0;padding:0;list-style:none}.stop-card{display:grid;grid-template-columns:74px 1fr;border-bottom:1px solid rgba(18,51,49,.22)}.stop-card:last-child{border-bottom:0}.stop-index{display:grid;place-items:start center;padding-top:31px;border-right:1px solid rgba(18,51,49,.22);color:var(--coral);font-family:Georgia,serif;font-size:18px;font-style:italic}.stop-content{padding:30px 34px}.stop-media{aspect-ratio:16/6;margin:-30px -34px 27px;overflow:hidden;background:#234643}.stop-media img{width:100%;height:100%;object-fit:cover;transition:transform .5s}.stop-card:hover .stop-media img{transform:scale(1.035)}
+    .stop-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}.stop-top span{color:var(--teal);font-size:17px;font-weight:900}.stop-top em{padding:3px 8px;color:#fff;background:var(--coral);font-size:9px;font-style:normal;font-weight:900}.stop-top small{color:#7d8884}.stop-content h3{margin-bottom:9px;font-family:Georgia,"Songti SC",serif;font-size:27px;font-weight:400}.stop-content>p{max-width:760px;color:#5d6b67;font-size:13px}.stop-meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:#667570;font-size:10px}.tip-list,.note-list{margin:15px 0 0;padding-left:18px;color:#67736f;font-size:10px}.tip-list{display:flex;flex-wrap:wrap;gap:5px 24px}
+    .ferry-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:80px;align-items:start}.ferry-layout .section-heading{display:block;margin-bottom:0}.ferry-layout .section-heading>p{margin-top:22px}.ferry-routes{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--ink)}.ferry-routes article{min-height:150px;padding:24px;border-right:1px solid var(--ink)}.ferry-routes article:last-child{border-right:0}.ferry-routes span,.ferry-routes small{display:block}.ferry-routes span{color:var(--teal);font-size:10px;font-weight:900}.ferry-routes strong{display:block;margin:18px 0 9px;font-family:Georgia,"Songti SC",serif;font-size:19px;font-weight:400}.ferry-routes small{color:#71807b;font-size:10px}
+    .hotel-section{background:#efe6d2}.hotel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.hotel-card{display:flex;min-width:0;flex-direction:column;border:1px solid var(--ink);background:#fffaf0;box-shadow:7px 7px 0 rgba(18,51,49,.16)}.hotel-media{aspect-ratio:16/9;overflow:hidden}.hotel-media img{width:100%;height:100%;object-fit:cover}.hotel-body{display:flex;flex:1;flex-direction:column;padding:25px}.hotel-top{display:flex;justify-content:space-between;gap:12px;color:var(--coral);font-size:10px;font-weight:900}.hotel-card h3{margin:19px 0 6px;font-family:Georgia,"Songti SC",serif;font-size:24px;font-weight:400}.hotel-area{color:var(--teal)!important;font-size:10px!important}.hotel-card p{color:#61706c;font-size:12px}.hotel-card .mini-link{margin-top:auto;padding-top:14px}
+    .food-section{color:#fff;background:#233c3a}.food-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.food-card{position:relative;display:flex;min-width:0;flex-direction:column;overflow:hidden;color:var(--ink);background:#fffaf0;border:1px solid rgba(255,255,255,.32);box-shadow:7px 7px 0 rgba(5,21,20,.28);transition:transform .25s,box-shadow .25s}.food-card:hover{z-index:2;transform:translateY(-7px);box-shadow:10px 12px 0 rgba(5,21,20,.38)}
+    .food-media{position:relative;aspect-ratio:4/3;overflow:hidden;background:#163331}.food-media::after{content:"";position:absolute;inset:48% 0 0;background:linear-gradient(transparent,rgba(8,27,26,.5))}.food-media img{width:100%;height:100%;object-fit:cover;transition:transform .5s}.food-card:hover .food-media img{transform:scale(1.055)}
+    .image-placeholder{display:grid;place-items:center;background:radial-gradient(circle at 75% 20%,rgba(245,198,77,.42),transparent 30%),linear-gradient(135deg,#173b38,#2d5a54);color:rgba(255,255,255,.55);font-size:9px;font-weight:900;letter-spacing:.18em}.image-placeholder::before{content:"";width:70px;height:70px;border:1px solid rgba(255,255,255,.25);border-radius:50%;position:absolute}.image-placeholder span{position:relative;z-index:1}
+    .food-mark{position:absolute;z-index:3;left:13px;top:13px;display:grid;min-width:43px;height:43px;padding:0 7px;place-items:center;border:1px solid var(--ink);color:var(--ink);background:var(--yellow);box-shadow:3px 3px 0 var(--coral);font-family:Georgia,serif;font-size:18px;font-style:italic;transform:rotate(-2deg)}.photo-note{position:absolute;z-index:3;right:11px;bottom:11px;padding:4px 7px;border:1px solid rgba(255,255,255,.35);color:#fff;background:rgba(19,45,45,.78);font-size:8px;font-weight:900;letter-spacing:.08em}
+    .food-body{display:flex;flex:1;flex-direction:column;padding:19px 18px}.food-body h3{margin-bottom:4px;font-family:Georgia,"Songti SC",serif;font-size:21px;font-weight:400}.food-address{margin:0;color:var(--teal);font-size:10px}.food-order{margin:17px 0 10px;padding-top:14px;border-top:1px dashed rgba(19,45,45,.25);font-size:12px}.food-order strong{color:var(--coral)}.food-body small{display:block;min-height:3.1em;color:#687671;font-size:10px}.food-body .mini-link{margin-top:auto;padding-top:17px}
+    .budget-section{background:#fffaf0}.budget-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:80px;align-items:center}.budget-layout .section-heading{display:block}.budget-layout .section-heading>p{margin-top:20px}.budget-toggle{display:inline-flex;border:1px solid var(--ink);background:#fff}.budget-toggle button{min-height:40px;padding:0 14px;border:0;border-right:1px solid var(--ink);background:transparent;font-size:10px;font-weight:900;cursor:pointer}.budget-toggle button:last-child{border-right:0}.budget-toggle button[aria-pressed="true"]{color:#fff;background:var(--ink)}.budget-total{display:flex;flex-direction:column;margin-top:24px;padding:25px;border:1px solid var(--ink);background:var(--yellow)}.budget-total span,.budget-total small{font-size:10px}.budget-total strong{margin:8px 0;font-family:Georgia,serif;font-size:42px;font-weight:400}
+    .budget-items{border:1px solid var(--ink);background:#fff}.budget-items>div{position:relative;display:grid;grid-template-columns:1fr auto;gap:12px;padding:22px 24px;border-bottom:1px solid rgba(18,51,49,.2);overflow:hidden}.budget-items>div:last-child{border-bottom:0}.budget-items span,.budget-items strong{position:relative;z-index:2;font-size:12px}.budget-items i{position:absolute;left:0;bottom:0;width:var(--weight);height:4px;background:var(--teal);transition:width .35s}
+    .weather-section{background:#e8f2ed}.weather-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-left:1px solid var(--ink)}.weather-grid article{display:flex;min-height:220px;flex-direction:column;padding:25px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}.weather-grid span{color:var(--teal);font-size:11px;font-weight:900}.weather-grid strong{margin:30px 0 6px;font-family:Georgia,"Songti SC",serif;font-size:25px;font-weight:400}.weather-grid b{color:var(--coral);font-size:29px}.weather-grid b i,.weather-grid small i{font-style:normal}.weather-grid small{margin-top:auto;color:#67756f;font-size:10px}.weather-actions{display:flex;align-items:center;gap:18px;margin-top:24px}.weather-actions .action-button{margin-top:0;border-color:var(--ink)}.weather-actions #weather-status{margin-left:auto;color:#64716d;font-size:10px}
+    .packing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.packing-grid article{padding:24px;border:1px solid var(--ink);background:#fffaf0}.packing-grid>article>span{color:var(--coral);font-size:11px;font-weight:900}.packing-list{margin:17px 0 0;padding:0;list-style:none}.packing-list li{padding:9px 0;border-top:1px solid rgba(18,51,49,.16);font-size:11px}
+    .sources-section{background:#e8dfca}.source-grid{display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid var(--ink);border-top:1px solid var(--ink)}.source-grid article{min-height:190px;padding:22px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}.source-grid span{color:var(--coral);font-size:9px;font-weight:900}.source-grid h3{margin:17px 0 8px;font-size:15px}.source-grid p{color:#64716d;font-size:10px}.disclaimers{margin-top:28px;padding:21px 24px;border:1px dashed var(--ink)}.disclaimers p{margin:0 0 8px;color:#61706b;font-size:10px}.disclaimers p:last-child{margin-bottom:0}
+    footer{padding:32px 0;color:#fff;background:var(--ink)}footer .shell{display:flex;align-items:center;gap:20px}footer span{color:#8ed4c8}footer small{margin-left:auto;color:rgba(255,255,255,.5)}
+    .motion-toggle,.back-top{position:fixed;z-index:50;bottom:22px;display:grid;place-items:center;border:1px solid var(--yellow);color:#fff;background:var(--ink);box-shadow:4px 4px 0 var(--coral);cursor:pointer}.motion-toggle{left:22px;min-height:48px;padding:0 16px;font-size:10px;font-weight:900}.back-top{right:22px;width:52px;height:52px;border-radius:50%;font-size:18px;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .2s,transform .2s}.back-top.visible{opacity:1;pointer-events:auto;transform:none}
+    .js .reveal-target{opacity:0;transform:translateY(24px);transition:opacity .65s,transform .65s}.js .reveal-target.visible{opacity:1;transform:none}.reduce-motion *{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
+    @media(max-width:980px){.hero-inner{grid-template-columns:1fr;gap:45px}.hero{min-height:auto}.hero-stats{max-width:650px}.section-heading{grid-template-columns:1fr;gap:20px}.quick-grid,.checklist-grid,.food-grid{grid-template-columns:repeat(2,1fr)}.hotel-grid{grid-template-columns:1fr 1fr}.budget-layout,.ferry-layout{grid-template-columns:1fr;gap:45px}.day-card>header{grid-template-columns:150px 1fr}.day-card>header p{grid-column:1/-1}.source-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:680px){.shell{width:min(100% - 28px,1180px)}.hero-inner{padding:105px 0 75px}.hero h1{font-size:54px}.hero-summary{font-size:15px}.hero-stats{grid-template-columns:1fr 1fr}.hero-stats div{min-height:96px;padding:18px}.section{padding:68px 0}.section-heading h2{font-size:42px}.quick-grid,.checklist-grid,.ticket-grid,.hotel-grid,.food-grid,.weather-grid,.packing-grid,.source-grid{grid-template-columns:1fr}.quick-grid,.weather-grid,.source-grid{border-left:1px solid var(--ink)}.checklist-grid{gap:10px}.transport-notes{grid-template-columns:1fr}.ticket-card{padding:24px}.ticket-route{grid-template-columns:1fr 45px 1fr}.day-card>header{grid-template-columns:1fr;gap:12px;padding:24px}.day-card>header p{grid-column:auto}.route-strip{padding-inline:24px}.stop-card{grid-template-columns:48px 1fr}.stop-content{padding:25px 20px}.stop-media{margin:-25px -20px 22px}.ferry-routes{grid-template-columns:1fr}.ferry-routes article{border-right:0;border-bottom:1px solid var(--ink)}.ferry-routes article:last-child{border-bottom:0}.food-body small{min-height:0}.budget-total strong{font-size:34px}.weather-actions{align-items:flex-start;flex-wrap:wrap}.weather-actions #weather-status{width:100%;margin-left:0}footer .shell{align-items:flex-start;flex-direction:column;gap:5px}footer small{margin-left:0}.motion-toggle{left:12px;bottom:12px}.back-top{right:12px;bottom:12px}}
+    @media print{.sample-banner,.scroll-progress,.section-nav,.motion-toggle,.back-top,.action-button{display:none!important}.hero{min-height:auto}.hero-inner{padding:60px 0}.section{padding:45px 0}.day-card,.food-card,.hotel-card,.ticket-card{break-inside:avoid;box-shadow:none}.js .reveal-target{opacity:1;transform:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+  </style>
+</head>
+<body>
+  __SAMPLE_BANNER__
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  __HERO__
+  __NAV__
+  <main>__BODY__</main>
+  __FOOTER__
+  <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="true">动效开启</button>
+  <button class="back-top" id="back-top" type="button" aria-label="返回顶部">↑</button>
+  <script type="application/json" id="guide-data">__GUIDE_DATA__</script>
+  <script id="guide-interactions">
+  (() => {
+    "use strict";
+    const root = document.documentElement;
+    root.classList.add("js");
+    const dataNode = document.getElementById("guide-data");
+    const data = dataNode ? JSON.parse(dataNode.textContent) : null;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const safeStorage = {
+      get(key) { try { return window.localStorage.getItem(key); } catch { return null; } },
+      set(key, value) { try { window.localStorage.setItem(key, value); } catch { /* 本地存储不可用时保持页面可用 */ } },
+    };
+
+    const motionButton = document.getElementById("motion-toggle");
+    const motionKey = `travel-guide-motion:${data?.meta?.slug || "default"}`;
+    let motionEnabled = !prefersReduced && safeStorage.get(motionKey) !== "off";
+    const syncMotion = () => {
+      root.classList.toggle("reduce-motion", !motionEnabled);
+      motionButton?.setAttribute("aria-pressed", String(motionEnabled));
+      if (motionButton) motionButton.textContent = motionEnabled ? "动效开启" : "动效关闭";
+    };
+    syncMotion();
+    motionButton?.addEventListener("click", () => {
+      motionEnabled = !motionEnabled;
+      safeStorage.set(motionKey, motionEnabled ? "on" : "off");
+      syncMotion();
+    });
+
+    const revealTargets = Array.from(document.querySelectorAll(".section-heading, .quick-grid, .checklist-grid, .ticket-card, .day-card, .hotel-card, .food-card, .budget-layout, .weather-grid, .packing-grid, .source-grid"));
+    revealTargets.forEach((element) => element.classList.add("reveal-target"));
+    if (prefersReduced || !("IntersectionObserver" in window)) {
+      revealTargets.forEach((element) => element.classList.add("visible"));
+    } else {
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.08, rootMargin: "0px 0px -8% 0px" });
+      revealTargets.forEach((element) => revealObserver.observe(element));
+    }
+
+    const progress = document.getElementById("scroll-progress");
+    const backTop = document.getElementById("back-to-top") || document.getElementById("back-top");
+    const updateScroll = () => {
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = height > 0 ? Math.min(1, Math.max(0, window.scrollY / height)) : 0;
+      if (progress) progress.style.transform = `scaleX(${ratio})`;
+      backTop?.classList.toggle("visible", window.scrollY > 650);
+    };
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    backTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: motionEnabled ? "smooth" : "auto" }));
+
+    const sectionLinks = Array.from(document.querySelectorAll("[data-section-link]"));
+    const sections = sectionLinks.map((link) => document.getElementById(link.dataset.sectionLink)).filter(Boolean);
+    if ("IntersectionObserver" in window) {
+      const activeObserver = new IntersectionObserver((entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        sectionLinks.forEach((link) => link.classList.toggle("active", link.dataset.sectionLink === visible.target.id));
+      }, { threshold: [0.15, 0.35, 0.6], rootMargin: "-20% 0px -60%" });
+      sections.forEach((section) => activeObserver.observe(section));
+    }
+
+    const checklistKey = `travel-guide-checklist:${data?.meta?.slug || "default"}`;
+    let checkedIds = [];
+    try { checkedIds = JSON.parse(safeStorage.get(checklistKey) || "[]"); } catch { checkedIds = []; }
+    document.querySelectorAll("[data-check-id]").forEach((input) => {
+      input.checked = checkedIds.includes(input.dataset.checkId);
+      input.addEventListener("change", () => {
+        checkedIds = Array.from(document.querySelectorAll("[data-check-id]:checked")).map((item) => item.dataset.checkId);
+        safeStorage.set(checklistKey, JSON.stringify(checkedIds));
+      });
+    });
+
+    const budgetModes = data?.budget?.modes || [];
+    const budgetButtons = Array.from(document.querySelectorAll("[data-budget-mode]"));
+    const budgetLabel = document.getElementById("budget-label");
+    const budgetTotal = document.getElementById("budget-total");
+    const budgetNote = document.getElementById("budget-note");
+    const budgetItems = document.getElementById("budget-items");
+    const escapeText = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[character]);
+    const selectBudget = (id) => {
+      const mode = budgetModes.find((item) => item.id === id);
+      if (!mode) return;
+      budgetButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.budgetMode === id)));
+      if (budgetLabel) budgetLabel.textContent = mode.label;
+      if (budgetTotal) budgetTotal.textContent = mode.total;
+      if (budgetNote) budgetNote.textContent = mode.note || "";
+      if (budgetItems) budgetItems.innerHTML = mode.items.map((item) => `<div><span>${escapeText(item.label)}</span><strong>${escapeText(item.amount)}</strong><i style="--weight:${Number(item.weight) || 0}%"></i></div>`).join("");
+    };
+    budgetButtons.forEach((button) => button.addEventListener("click", () => selectBudget(button.dataset.budgetMode)));
+
+    const weatherButton = document.getElementById("weather-refresh");
+    const weatherStatus = document.getElementById("weather-status");
+    const weatherCode = (code) => {
+      if (code === 0) return "晴";
+      if ([1, 2].includes(code)) return "多云";
+      if (code === 3) return "阴";
+      if ([45, 48].includes(code)) return "雾";
+      if ([51, 53, 55, 56, 57].includes(code)) return "毛毛雨";
+      if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "阵雨";
+      if ([71, 73, 75, 77, 85, 86].includes(code)) return "雪";
+      if ([95, 96, 99].includes(code)) return "雷阵雨";
+      return "天气变化";
+    };
+    weatherButton?.addEventListener("click", async () => {
+      if (!data?.weather) return;
+      weatherButton.disabled = true;
+      if (weatherStatus) weatherStatus.textContent = "正在刷新天气…";
+      const params = new URLSearchParams({
+        latitude: String(data.weather.latitude),
+        longitude: String(data.weather.longitude),
+        daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+        timezone: "auto",
+        start_date: data.meta.startDate,
+        end_date: data.meta.endDate,
+      });
+      try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { headers: { accept: "application/json" } });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        const dates = payload?.daily?.time || [];
+        dates.forEach((date, index) => {
+          const card = document.querySelector(`[data-weather-date="${date}"]`);
+          if (!card) return;
+          const summary = card.querySelector("[data-weather-summary]");
+          const high = card.querySelector("[data-weather-high]");
+          const low = card.querySelector("[data-weather-low]");
+          const rain = card.querySelector("[data-weather-rain]");
+          if (summary) summary.textContent = weatherCode(payload.daily.weather_code[index]);
+          if (high) high.textContent = Math.round(payload.daily.temperature_2m_max[index]);
+          if (low) low.textContent = Math.round(payload.daily.temperature_2m_min[index]);
+          if (rain) rain.textContent = Math.round(payload.daily.precipitation_probability_max[index] ?? 0);
+        });
+        if (weatherStatus) weatherStatus.textContent = `已刷新 · ${new Date().toLocaleString("zh-CN", { hour12: false })}`;
+      } catch {
+        if (weatherStatus) weatherStatus.textContent = "实时刷新暂不可用，已保留核实快照与数据来源入口。";
+      } finally {
+        weatherButton.disabled = false;
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

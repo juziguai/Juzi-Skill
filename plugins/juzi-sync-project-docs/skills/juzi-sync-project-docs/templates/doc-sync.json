@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "mode": "block",
+  "behavior_paths": [
+    "src/",
+    "api/",
+    "package.json"
+  ]
+}

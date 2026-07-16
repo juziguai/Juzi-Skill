@@ -1,0 +1,4 @@
+interface:
+  display_name: "Juzi Skill Lifecycle"
+  short_description: "Build and install Juzi Codex capabilities"
+  default_prompt: "Create, validate, and install this Juzi Codex capability safely."

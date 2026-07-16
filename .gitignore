@@ -1,0 +1,44 @@
+# This repository is an allowlisted marketplace. Ignore every root entry first,
+# then opt in only the files that are safe and required for development/release.
+/*
+
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/.agents/
+!/.agents/**
+!/.github/
+!/.github/**
+!/scripts/
+!/scripts/**
+!/plugins/
+!/plugins/**
+!/juzi-codex-skill-lifecycle/
+!/juzi-codex-skill-lifecycle/**
+!/Juzi-sync-project-docs/
+!/Juzi-sync-project-docs/**
+!/Juzi-travel-guide/
+!/Juzi-travel-guide/**
+!/juzi-windows-elevation/
+!/juzi-windows-elevation/**
+
+# Transient or sensitive content remains excluded even inside allowlisted trees.
+**/.env
+**/.env.*
+!**/.env.example
+**/.DS_Store
+**/Thumbs.db
+**/desktop.ini
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/coverage/
+**/*.log
+**/*.tmp
+**/*.bak

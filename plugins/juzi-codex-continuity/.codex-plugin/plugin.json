@@ -1,0 +1,18 @@
+{
+  "name": "juzi-codex-continuity",
+  "version": "0.1.0+codex.20260713013739",
+  "description": "File-based continuity checkpoints for Codex tasks.",
+  "author": {
+    "name": "juzi"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Juzi-Codex-Continuity",
+    "shortDescription": "\u8ba9 Codex \u5728\u538b\u7f29\u540e\u76f4\u63a5\u63a5\u7eed\u5f53\u524d\u5de5\u4f5c\u3002",
+    "longDescription": "\u4e00\u4e2a\u65e0\u6570\u636e\u5e93\u3001\u65e0 MCP\u3001\u65e0\u540e\u53f0\u670d\u52a1\u7684\u6587\u4ef6\u5316\u4e0a\u4e0b\u6587\u4ea4\u63a5\u534f\u8bae\u3002",
+    "developerName": "juzi",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "\u4e3a\u5f53\u524d\u591a\u6b65\u9aa4\u4efb\u52a1\u5efa\u7acb\u6216\u6062\u590d .codex/ACTIVE_TASK.md\uff0c\u5e76\u6309\u8fde\u7eed\u6027\u534f\u8bae\u7ee7\u7eed\u6267\u884c\u3002"
+  }
+}

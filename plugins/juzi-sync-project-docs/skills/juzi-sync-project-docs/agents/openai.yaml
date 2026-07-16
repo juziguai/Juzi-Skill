@@ -1,0 +1,4 @@
+interface:
+  display_name: "Juzi-同步项目文档"
+  short_description: "基于真实版本和 Git 提交检查并修正文档漂移任务。"
+  default_prompt: "Use $juzi-sync-project-docs to inspect this project for documentation drift and prepare the smallest evidence-backed update plan."

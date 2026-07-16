@@ -1,0 +1,18 @@
+{
+  "name": "juzi-sync-project-docs",
+  "version": "0.1.0+codex.20260715062854",
+  "description": "Evidence-based project documentation synchronization for Codex.",
+  "author": {
+    "name": "juzi"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Juzi Sync Project Docs",
+    "shortDescription": "Keep project documentation aligned with verified changes.",
+    "longDescription": "An evidence-based workflow for detecting and correcting documentation drift from project versions, commits, and behavior changes.",
+    "developerName": "juzi",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Check this project for documentation drift."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\Tools\\AI\\Juzi-Skill\\Juzi-sync-project-docs\\scripts\\codex-doc-sync-hook.ps1\" -Event UserPromptSubmit",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\Tools\\AI\\Juzi-Skill\\Juzi-sync-project-docs\\scripts\\codex-doc-sync-hook.ps1\" -Event Stop",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

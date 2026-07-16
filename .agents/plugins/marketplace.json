@@ -1,0 +1,80 @@
+{
+  "name": "juzi-skill",
+  "interface": {
+    "displayName": "Juzi Skill"
+  },
+  "plugins": [
+    {
+      "name": "juzi-codex-continuity",
+      "source": {
+        "source": "local",
+        "path": "./plugins/juzi-codex-continuity"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "juzi-codex-skill-lifecycle",
+      "source": {
+        "source": "local",
+        "path": "./plugins/juzi-codex-skill-lifecycle"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "juzi-team-lead",
+      "source": {
+        "source": "local",
+        "path": "./plugins/juzi-team-lead"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "juzi-windows-elevation",
+      "source": {
+        "source": "local",
+        "path": "./plugins/juzi-windows-elevation"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "juzi-sync-project-docs",
+      "source": {
+        "source": "local",
+        "path": "./plugins/juzi-sync-project-docs"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "juzi-travel-guide",
+      "source": {
+        "source": "local",
+        "path": "./plugins/juzi-travel-guide"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

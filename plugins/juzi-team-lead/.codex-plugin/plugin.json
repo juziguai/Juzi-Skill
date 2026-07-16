@@ -1,0 +1,18 @@
+{
+  "name": "juzi-team-lead",
+  "version": "0.1.0+codex.20260715062853",
+  "description": "Team coordination workflow for delegated Codex work.",
+  "author": {
+    "name": "juzi"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Juzi Team Lead",
+    "shortDescription": "Coordinate delegated implementation work in Codex.",
+    "longDescription": "A tool-agnostic project-management workflow for multi-file implementation tasks that explicitly use delegation or parallel work.",
+    "developerName": "juzi",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Coordinate this task with a team of Codex agents."
+  }
+}
