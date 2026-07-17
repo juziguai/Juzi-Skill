@@ -18,13 +18,23 @@
 C:\Users\juzi\Documents\Codex\2026-07-14\new-chat-2
 ```
 
+2026-07-16 的第二轮迭代新增了行程状态带、行前清单完成度、逐日快速跳转和旅行当天的下一站提示；同时强化了完整日期覆盖、站点时间顺序、天气日期和经纬度校验，并把移动端关键触控目标提升到至少 44px。新增交互沿用原版暖纸色、网格卡片和章节顺序，原版四格速览与清单保持连续，轻量状态带追加在清单之后，不以“重设计”替代局部增强。
+
+同日第三轮纠偏明确以仓内 `ChatGPT-5.6 Sol-深圳出发-厦门三天两夜攻略.html` 为唯一金标准原版。原文件保持字节不变，由 `scripts/refine-reference-guide.mjs` 确定性生成“迭代版”；当前增量只修手机标题排版、44px 触控目标、减少/暂停动效时地图内容消失，以及天气失败后卡片仍停留在 loading 的状态矛盾。通用 JSON 生成器继续服务新目的地，不得反向覆盖用户指定的既有原版。
+
+2026-07-17 完成了旅游规划产品专项研究，覆盖 Wanderlog、TripIt、Tripomatic、Roadtrippers、Tripadvisor Trips、Google Travel、穷游行程助手和携程攻略，并记录 Mindtrip 官网维护限制。结论和 `P0/P1/P2` 增量路线见 `references/travel-planner-competitive-research.md`。该文档用于选择模块和交互，不授权推倒原版重设计；厦门原版的首屏、配色、章节顺序和内容仍是视觉与信息架构基线。
+
+同日完成 Apple 设计语言专项研究，依据 2026 HIG、Apple Maps、Apple Maps Web、Wallet 和 Weather 官方资料，形成 `references/apple-design-language-research.md`。融合策略是“Juzi 内容层 + Apple-inspired 控制层”：保留原版黄色、珊瑚红、深青、网格、衬线标题和章节顺序，只在移动导航、日期切换、地图控制、下一站动作条和状态反馈中吸收 Apple 的层级、材质与交互原则。Liquid Glass 不得进入正文卡片层，也不得复制 Apple 商标、受限字体或产品素材。
+
+随后以金标准原版的只读副本完成 Apple 风格实现，确定性产物为 `ChatGPT-5.6 Sol-深圳出发-厦门三天两夜攻略-Apple风格迭代版.html`。新增移动五项底栏、日期分段控制、下一站动作条、地图浮动工具栏、行程/地图切换、天气渐进披露、旅程凭证和显示设置；日期状态在时间线、地图、天气、下一站与凭证之间同步。原版内容、配色、车票、8 个内嵌 WebP、章节顺序和海报构图保持不变，设计验收记录见 `design-qa.md`。
+
 ## 2. 能力与交付物
 
 核心入口是 [SKILL.md](SKILL.md)。Skill 要求 Codex：
 
 1. 先联网调研并记录来源与核实时间；
 2. 按 `assets/plan.template.json` 形成结构化行程数据；
-3. 使用 `scripts/build-guide.mjs` 生成自包含 HTML；
+3. 使用 `scripts/build-guide.mjs` 生成带行程驾驶舱和逐日快速入口的自包含 HTML；
 4. 使用原创 WebP 图片，不复制攻略网站图片；
 5. 执行内容、体积、可访问性、交互和离线交付质量门禁。
 
@@ -55,6 +65,10 @@ outputs/<出发地>-<目的地>-<天数>攻略.html
 
 ```text
 Juzi-travel-guide/
+├── ChatGPT-5.6 Sol-深圳出发-厦门三天两夜攻略.html
+├── ChatGPT-5.6 Sol-深圳出发-厦门三天两夜攻略-迭代版.html
+├── ChatGPT-5.6 Sol-深圳出发-厦门三天两夜攻略-Apple风格迭代版.html
+├── design-qa.md
 ├── SKILL.md
 ├── HANDOFF.md
 ├── agents/
@@ -63,11 +77,17 @@ Juzi-travel-guide/
 │   ├── plan.template.json
 │   └── travel-guide-template.html
 ├── references/
+│   ├── apple-design-language-research.md
 │   ├── plan-schema.md
 │   ├── quality-gates.md
-│   └── research-and-verification.md
+│   ├── research-and-verification.md
+│   └── travel-planner-competitive-research.md
 └── scripts/
+    ├── build-apple-reference-guide.mjs
+    ├── build-apple-reference-guide.test.mjs
     ├── build-guide.mjs
+    ├── refine-reference-guide.mjs
+    ├── refine-reference-guide.test.mjs
     └── smoke-test.mjs
 ```
 
@@ -166,6 +186,24 @@ if ($LASTEXITCODE -ne 0) {
    node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\smoke-test.mjs'
    ```
 
+   修改厦门金标准增量脚本后，另外运行：
+
+   ```powershell
+   node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\refine-reference-guide.mjs'
+   node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\refine-reference-guide.test.mjs'
+   node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\refine-reference-guide.mjs' --check
+   ```
+
+   修改 Apple 风格专用构建或控制层后，另外运行：
+
+   ```powershell
+   node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\build-apple-reference-guide.mjs'
+   node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\build-apple-reference-guide.test.mjs'
+   node 'D:\Tools\AI\Juzi-Skill\Juzi-travel-guide\scripts\build-apple-reference-guide.mjs' --check
+   ```
+
+   重新采集桌面、390px、320px、200% 回流、减少动效和材质回退证据，并在 `design-qa.md` 中保留完整比较历史；只有没有可执行的 P0/P1/P2 差异时才写 `final result: passed`。
+
 4. 按第 5 节把规范源码重新同步到插件包，并执行两个 Skill 验证、插件验证、cachebuster 更新和市场重装；
 5. 运行 `codex plugin list` 确认新版本已安装；
 6. 已打开的 Codex 任务不会重新加载插件，必须新建任务验证。
@@ -211,4 +249,5 @@ codex plugin remove 'juzi-travel-guide@juzi-skill' --json
 - [ ] 新 Codex 任务能看到 `juzi-travel-guide`；
 - [ ] source locator 指向插件缓存中的版本目录；
 - [ ] `smoke-test.mjs` 通过；
+- [ ] Apple 风格专用构建测试与 `--check` 通过，`design-qa.md` 为 `final result: passed`；
 - [ ] 没有修改或手工清理 Codex 插件缓存。

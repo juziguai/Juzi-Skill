@@ -9,7 +9,7 @@
 | `meta` | 是 | 标题、地点、日期、人数、核实时间、离线和预算设置 |
 | `hero` | 是 | 首屏标题、摘要、统计，可选封面图 |
 | `quickFacts` | 是 | 首屏关键决策卡片 |
-| `checklist` | 是 | 可勾选行前任务，`id` 必须唯一 |
+| `checklist` | 是 | 可勾选行前任务，`id` 必须唯一；页面会据此生成本地完成度 |
 | `transport` | 是 | `outbound`、`return` 和 `notes` |
 | `days` | 是 | 每日主题与按时间排序的 `stops` |
 | `ferry` | 否 | 有轮渡时填写；无则设为 `null` |
@@ -26,6 +26,7 @@
 ### `meta`
 
 - 使用 `YYYY-MM-DD` 的 `startDate` / `endDate`。
+- `timezone` 使用目的地有效 IANA 时区，例如 `Asia/Shanghai`；行程驾驶舱据此判断旅行当天和下一站。
 - `sampleOnly` 在真实交付时必须为 `false`。
 - `offline` 默认 `true`；为 `true` 时图片必须是本地文件或 Data URI。
 - `slug` 用于本地清单存储，使用小写字母、数字和连字符。
@@ -37,7 +38,11 @@
 
 ### 每日站点
 
-必填：`time`、`name`、`type`、`description`。可选：`duration`、`address`、`ticket`、`tips`、`mapUrl`、`image`、`imageAlt`。
+`days` 必须从 1 连续编号，并逐日覆盖 `startDate` 到 `endDate`，不能缺日、重复或乱序。`weather.days` 必须与这些日期逐一对应。
+
+站点必填：`time`、`name`、`type`、`description`。`time` 使用 24 小时制 `HH:MM`，同一天按时间从早到晚排列。可选：`duration`、`address`、`ticket`、`tips`、`mapUrl`、`image`、`imageAlt`。
+
+生成器会根据 `days` 自动创建行程驾驶舱、逐日入口，并按 `meta.timezone` 在旅行当天显示下一站；不要在文案字段中重复拼一份“今日状态”。
 
 ### 图片路径
 

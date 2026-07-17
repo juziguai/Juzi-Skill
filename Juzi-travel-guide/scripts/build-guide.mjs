@@ -81,10 +81,42 @@ function optionalString(value, label) {
 
 function validateIsoDate(value, label) {
   const text = requireString(value, label);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(text) || Number.isNaN(Date.parse(`${text}T00:00:00Z`))) {
+  const parsed = new Date(`${text}T00:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== text) {
     fail(`${label} 必须使用有效的 YYYY-MM-DD 日期。`);
   }
   return text;
+}
+
+function validateTimeZone(value, label) {
+  const text = requireString(value, label);
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: text }).format(0);
+  } catch {
+    fail(`${label} 必须是有效的 IANA 时区，例如 Asia/Shanghai。`);
+  }
+  return text;
+}
+
+function isoDateRange(startDate, endDate) {
+  const dates = [];
+  const cursor = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+  while (cursor <= end) {
+    dates.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return dates;
+}
+
+function validateTime(value, label) {
+  const text = requireString(value, label);
+  const match = /^(\d{2}):(\d{2})$/.exec(text);
+  if (!match) fail(`${label} 必须使用 HH:MM 时间。`);
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) fail(`${label} 不是有效时间：${text}`);
+  return (hours * 60) + minutes;
 }
 
 function validateUrl(value, label, { optional = false } = {}) {
@@ -112,7 +144,7 @@ function validatePlan(plan) {
   const startDate = validateIsoDate(meta.startDate, "meta.startDate");
   const endDate = validateIsoDate(meta.endDate, "meta.endDate");
   if (startDate > endDate) fail("meta.startDate 不得晚于 meta.endDate。");
-  requireString(meta.timezone, "meta.timezone");
+  validateTimeZone(meta.timezone, "meta.timezone");
   requireString(meta.travelers, "meta.travelers");
   requireString(meta.transportMode, "meta.transportMode");
   requireString(meta.verifiedAt, "meta.verifiedAt");
@@ -120,6 +152,7 @@ function validatePlan(plan) {
   if (!/^[a-z0-9-]+$/.test(meta.slug)) fail("meta.slug 只允许小写字母、数字和连字符。");
   if (typeof meta.sampleOnly !== "boolean") fail("meta.sampleOnly 必须是布尔值。");
   if (typeof meta.offline !== "boolean") fail("meta.offline 必须是布尔值。");
+  const expectedDates = isoDateRange(startDate, endDate);
 
   const hero = requireObject(plan.hero, "hero");
   requireString(hero.eyebrow, "hero.eyebrow");
@@ -159,17 +192,29 @@ function validatePlan(plan) {
   }
   requireArray(transport.notes, "transport.notes");
 
-  requireArray(plan.days, "days", 1).forEach((day, dayIndex) => {
-    if (!Number.isInteger(day.day) || day.day < 1) fail(`days[${dayIndex}].day 必须是正整数。`);
+  const days = requireArray(plan.days, "days", 1);
+  if (days.length !== expectedDates.length) {
+    fail(`days 必须覆盖 ${startDate} 至 ${endDate} 的每一天，共 ${expectedDates.length} 天。`);
+  }
+  days.forEach((day, dayIndex) => {
+    if (day.day !== dayIndex + 1) fail(`days[${dayIndex}].day 必须按 1 开始连续编号。`);
     const date = validateIsoDate(day.date, `days[${dayIndex}].date`);
-    if (date < startDate || date > endDate) fail(`days[${dayIndex}].date 超出旅行日期范围。`);
+    if (date !== expectedDates[dayIndex]) {
+      fail(`days[${dayIndex}].date 必须是 ${expectedDates[dayIndex]}，确保完整覆盖并按日期排序。`);
+    }
     requireString(day.weekday, `days[${dayIndex}].weekday`);
     requireString(day.title, `days[${dayIndex}].title`);
     requireString(day.theme, `days[${dayIndex}].theme`);
+    let previousTime = -1;
     requireArray(day.stops, `days[${dayIndex}].stops`, 1).forEach((stop, stopIndex) => {
-      for (const field of ["time", "name", "type", "description"]) {
+      for (const field of ["name", "type", "description"]) {
         requireString(stop[field], `days[${dayIndex}].stops[${stopIndex}].${field}`);
       }
+      const stopTime = validateTime(stop.time, `days[${dayIndex}].stops[${stopIndex}].time`);
+      if (stopTime < previousTime) {
+        fail(`days[${dayIndex}].stops 必须按时间从早到晚排列。`);
+      }
+      previousTime = stopTime;
       for (const field of ["duration", "address", "ticket", "image", "imageAlt"]) {
         optionalString(stop[field], `days[${dayIndex}].stops[${stopIndex}].${field}`);
       }
@@ -231,14 +276,28 @@ function validatePlan(plan) {
   if (!Number.isFinite(weather.latitude) || !Number.isFinite(weather.longitude)) {
     fail("weather.latitude / weather.longitude 必须是数字。");
   }
+  if (weather.latitude < -90 || weather.latitude > 90 || weather.longitude < -180 || weather.longitude > 180) {
+    fail("weather.latitude / weather.longitude 超出有效经纬度范围。");
+  }
   if (typeof weather.live !== "boolean") fail("weather.live 必须是布尔值。");
   validateUrl(weather.sourceUrl, "weather.sourceUrl");
-  requireArray(weather.days, "weather.days", 1).forEach((item, index) => {
-    validateIsoDate(item.date, `weather.days[${index}].date`);
+  const weatherDays = requireArray(weather.days, "weather.days", 1);
+  if (weatherDays.length !== expectedDates.length) {
+    fail(`weather.days 必须与 ${expectedDates.length} 天行程逐日对应。`);
+  }
+  weatherDays.forEach((item, index) => {
+    const date = validateIsoDate(item.date, `weather.days[${index}].date`);
+    if (date !== expectedDates[index]) {
+      fail(`weather.days[${index}].date 必须是 ${expectedDates[index]}。`);
+    }
     requireString(item.label, `weather.days[${index}].label`);
     requireString(item.summary, `weather.days[${index}].summary`);
     for (const field of ["high", "low", "rainProbability"]) {
       if (!Number.isFinite(item[field])) fail(`weather.days[${index}].${field} 必须是数字。`);
+    }
+    if (item.high < item.low) fail(`weather.days[${index}].high 不得低于 low。`);
+    if (item.rainProbability < 0 || item.rainProbability > 100) {
+      fail(`weather.days[${index}].rainProbability 必须在 0–100。`);
     }
   });
 
@@ -423,6 +482,23 @@ function renderSectionHeading(kicker, title, copy = "", inverse = false) {
   return `<div class="section-heading${inverse ? " inverse" : ""}"><div><p class="kicker">${escapeHtml(kicker)}</p><h2>${escapeHtml(title)}</h2></div>${copy ? `<p>${escapeHtml(copy)}</p>` : ""}</div>`;
 }
 
+function renderTripDashboard(plan) {
+  const dayLinks = plan.days.map((day) => `<a href="#day-${day.day}" data-trip-day="${escapeHtml(day.date)}"><span>DAY ${day.day}</span><strong>${escapeHtml(day.date)} · ${escapeHtml(day.weekday)}</strong><small>${escapeHtml(day.title)} · ${day.stops.length} 站</small></a>`).join("");
+  return `<div class="trip-dashboard" id="trip-dashboard">
+    <div class="trip-status" aria-live="polite">
+      <span class="trip-status-label" id="trip-status-label">行程状态</span>
+      <strong id="trip-status-title">${escapeHtml(plan.meta.startDate)} 出发</strong>
+      <p id="trip-status-copy">${plan.days.length} 天路线已整理，先完成关键预订与证件确认。</p>
+      <a class="trip-primary-link" id="trip-primary-link" href="#day-1">查看第一天</a>
+      <div class="readiness-summary">
+        <div><span>行前完成度</span><strong id="checklist-progress-text">0 / ${plan.checklist.length}</strong></div>
+        <div class="readiness-track" id="checklist-progress" role="progressbar" aria-label="行前准备完成度" aria-valuemin="0" aria-valuemax="${plan.checklist.length}" aria-valuenow="0"><i id="checklist-progress-bar"></i></div>
+      </div>
+    </div>
+    <nav class="trip-days" aria-label="逐日行程快速跳转">${dayLinks}</nav>
+  </div>`;
+}
+
 function renderHero(plan) {
   const stats = plan.hero.stats.map((item) => `<div><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong></div>`).join("");
   const cover = plan.hero.coverImage
@@ -445,11 +521,12 @@ function renderHero(plan) {
 
 function renderQuick(plan) {
   const facts = plan.quickFacts.map((item) => `<article><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong><small>${escapeHtml(item.note)}</small></article>`).join("");
-  const checklist = plan.checklist.map((item) => `<label class="check-card"><input type="checkbox" data-check-id="${escapeHtml(item.id)}"><span class="check-box" aria-hidden="true"></span><span><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.note)}</small>${item.url ? renderLink(item.url, "官方入口", "mini-link") : ""}</span></label>`).join("");
+  const checklist = plan.checklist.map((item) => `<article class="check-card"><label><input type="checkbox" data-check-id="${escapeHtml(item.id)}"><span class="check-box" aria-hidden="true"></span><span><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.note)}</small></span></label>${item.url ? renderLink(item.url, "官方入口", "mini-link") : ""}</article>`).join("");
   return `<section class="section" id="plan"><div class="shell">
     ${renderSectionHeading("START HERE", "先把关键项锁住", "完成后会保存在当前设备，不上传任何身份或订单信息。")}
     <div class="quick-grid">${facts}</div>
     <div class="checklist-grid">${checklist}</div>
+    ${renderTripDashboard(plan)}
   </div></section>`;
 }
 
@@ -488,7 +565,7 @@ function renderStop(stop, index) {
 }
 
 function renderDays(plan) {
-  const days = plan.days.map((day) => `<article class="day-card" data-day="${day.day}">
+  const days = plan.days.map((day) => `<article class="day-card" id="day-${day.day}" data-day="${day.day}" data-day-date="${escapeHtml(day.date)}">
     <header><div><span>DAY ${day.day} · ${escapeHtml(day.weekday)}</span><strong>${escapeHtml(day.date)}</strong></div><h3>${escapeHtml(day.title)}</h3><p>${escapeHtml(day.theme)}</p></header>
     <div class="route-strip" aria-label="当天路线">${day.stops.map((stop) => `<span>${escapeHtml(stop.name)}</span>`).join('<i aria-hidden="true">→</i>')}</div>
     <ol class="timeline">${day.stops.map(renderStop).join("")}</ol>
@@ -582,7 +659,20 @@ function color(value, fallback) {
 
 function serializeClientData(plan) {
   const data = {
-    meta: { slug: plan.meta.slug, startDate: plan.meta.startDate, endDate: plan.meta.endDate },
+    meta: {
+      slug: plan.meta.slug,
+      startDate: plan.meta.startDate,
+      endDate: plan.meta.endDate,
+      timezone: plan.meta.timezone,
+      destination: plan.meta.destination,
+    },
+    days: plan.days.map((day) => ({
+      day: day.day,
+      date: day.date,
+      weekday: day.weekday,
+      title: day.title,
+      stops: day.stops.map((stop) => ({ time: stop.time, name: stop.name, type: stop.type, mapUrl: stop.mapUrl || "" })),
+    })),
     budget: plan.budget,
     weather: plan.weather,
   };
