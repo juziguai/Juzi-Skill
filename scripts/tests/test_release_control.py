@@ -60,15 +60,24 @@ class SecretScanTests(unittest.TestCase):
 
 
 class EncodingTests(unittest.TestCase):
-    def test_run_decodes_utf8_when_windows_locale_is_cp1252(self) -> None:
+    def test_run_decodes_utf8_output(self) -> None:
         command = [
             sys.executable,
             "-c",
             "import sys; sys.stdout.buffer.write('中文路径'.encode('utf-8'))",
         ]
-        with mock.patch("subprocess._text_encoding", return_value="cp1252"):
-            completed = run(command)
+        completed = run(command)
         self.assertEqual(completed.stdout, "中文路径")
+
+    def test_run_declares_utf8_subprocess_contract(self) -> None:
+        with mock.patch("juzi_release.subprocess.run") as subprocess_run:
+            subprocess_run.return_value = SimpleNamespace(returncode=0, stdout="", stderr="")
+            run(["example-command"])
+        options = subprocess_run.call_args.kwargs
+        self.assertEqual(options["encoding"], "utf-8")
+        self.assertEqual(options["errors"], "strict")
+        self.assertEqual(options["env"]["PYTHONUTF8"], "1")
+        self.assertEqual(options["env"]["PYTHONIOENCODING"], "utf-8")
 
     def test_configure_utf8_stdio_reconfigures_both_streams(self) -> None:
         stdout = mock.Mock()
