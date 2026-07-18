@@ -1,0 +1,34 @@
+name: Clean Windows install
+
+on:
+  schedule:
+    - cron: "23 4 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - name: Install pinned Codex CLI
+        shell: pwsh
+        run: |
+          npm install --global @openai/codex@0.145.0-alpha.18
+          if ((codex --version) -notmatch '0\.145\.0-alpha\.18') {
+            throw 'Unexpected Codex CLI version.'
+          }
+      - name: Install every plugin in an isolated Codex Home
+        shell: pwsh
+        run: .\scripts\Test-JuziCanary.ps1 -OutputPath '.codex/reports/clean-install.json'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clean-windows-install-${{ github.run_id }}
+          path: .codex/reports/clean-install.json
+          if-no-files-found: error
+          retention-days: 30

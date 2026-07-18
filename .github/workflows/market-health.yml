@@ -1,0 +1,37 @@
+name: Marketplace health
+
+on:
+  schedule:
+    - cron: "17 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - name: Run clean marketplace preflight
+        shell: pwsh
+        run: .\scripts\Test-JuziRelease.ps1 -All -History -RequireClean -OutputPath '.codex/reports/preflight.json'
+      - name: Generate repository health and release receipt
+        shell: pwsh
+        run: |
+          python scripts/juzi_release.py health --output .codex/reports/health.json
+          python scripts/juzi_release.py receipt --channel stable --preflight .codex/reports/preflight.json --output .codex/reports/release-receipt.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: juzi-market-health-${{ github.run_id }}
+          path: .codex/reports/*.json
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,17 @@
+{
+  "name": "{{ID}}",
+  "version": "0.1.0+codex.{{CACHEBUSTER}}",
+  "description": "{{SUMMARY}}",
+  "author": {
+    "name": "Juzi"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "{{DISPLAY_NAME}}",
+    "shortDescription": "{{SUMMARY}}",
+    "longDescription": "{{SUMMARY}}",
+    "developerName": "Juzi",
+    "category": "Productivity",
+    "defaultPrompt": "Use the {{ID}} Skill for this task."
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "{{DISPLAY_NAME}}"
+  short_description: "{{SUMMARY}}"
+  default_prompt: "Use the {{ID}} Skill for this task and verify the result."
