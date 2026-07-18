@@ -39,6 +39,12 @@ $payload = [ordered]@{
         }
     )
 }
+$desiredSecurity = [ordered]@{
+    security_and_analysis = [ordered]@{
+        secret_scanning = [ordered]@{ status = 'enabled' }
+        secret_scanning_push_protection = [ordered]@{ status = 'enabled' }
+    }
+}
 
 Push-Location $root
 try {
@@ -48,12 +54,13 @@ try {
         currentVisibility = $view.visibility
         viewerPermission = $view.viewerPermission
         targetVisibility = 'PUBLIC'
+        security = $desiredSecurity
         ruleset = $payload
         apply = [bool]$Apply
     }
     if (-not $Apply) {
         $plan | ConvertTo-Json -Depth 12
-        exit 0
+        return
     }
     if (-not $ConfirmPublicExposure) {
         throw 'Apply requires -ConfirmPublicExposure because public exposure cannot be fully rolled back.'
@@ -82,20 +89,20 @@ try {
         $governanceRoot = Join-Path $root '.codex\governance'
         $null = New-Item -ItemType Directory -Path $governanceRoot -Force
         $securityPath = Join-Path $governanceRoot 'security.json'
-        $security = [ordered]@{
-            security_and_analysis = [ordered]@{
-                advanced_security = [ordered]@{ status = 'enabled' }
-                secret_scanning = [ordered]@{ status = 'enabled' }
-                secret_scanning_push_protection = [ordered]@{ status = 'enabled' }
-            }
-        }
         [System.IO.File]::WriteAllText(
             $securityPath,
-            (($security | ConvertTo-Json -Depth 8) + [Environment]::NewLine),
+            (($desiredSecurity | ConvertTo-Json -Depth 8) + [Environment]::NewLine),
             [System.Text.UTF8Encoding]::new($false)
         )
         & gh api --method PATCH "repos/$Repository" --input $securityPath | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw 'GitHub security feature enablement failed.' }
+        $securityPatchExitCode = $LASTEXITCODE
+        $repositoryState = gh api "repos/$Repository" | ConvertFrom-Json
+        if ($LASTEXITCODE -ne 0) { throw 'GitHub security state query failed.' }
+        $secretScanning = $repositoryState.security_and_analysis.secret_scanning.status
+        $pushProtection = $repositoryState.security_and_analysis.secret_scanning_push_protection.status
+        if ($secretScanning -ne 'enabled' -or $pushProtection -ne 'enabled') {
+            throw "GitHub security feature verification failed; patchExit=$securityPatchExitCode secretScanning=$secretScanning pushProtection=$pushProtection"
+        }
 
         $payloadPath = Join-Path $governanceRoot 'ruleset.json'
         [System.IO.File]::WriteAllText(
@@ -116,22 +123,27 @@ try {
         if ($final.Count -ne 1 -or $final[0].enforcement -ne 'active') {
             throw 'Active ruleset verification failed.'
         }
-        $repositoryState = gh api "repos/$Repository" | ConvertFrom-Json
         [ordered]@{
             status = 'passed'
             visibility = 'PUBLIC'
             rulesetId = $final[0].id
             enforcement = $final[0].enforcement
-            advancedSecurity = $repositoryState.security_and_analysis.advanced_security.status
+            advancedSecurity = 'available-public'
             secretScanning = $repositoryState.security_and_analysis.secret_scanning.status
             pushProtection = $repositoryState.security_and_analysis.secret_scanning_push_protection.status
         } | ConvertTo-Json
     }
     catch {
+        $failure = $_
         if ($changedVisibility) {
             & gh repo edit $Repository --visibility private --accept-visibility-change-consequences
+            $restoreExitCode = $LASTEXITCODE
+            $restored = gh repo view $Repository --json visibility | ConvertFrom-Json
+            if ($restoreExitCode -ne 0 -or $restored.visibility -ne 'PRIVATE') {
+                throw "Governance failed and PRIVATE rescue could not be verified: $failure"
+            }
         }
-        throw
+        throw $failure
     }
 }
 finally {

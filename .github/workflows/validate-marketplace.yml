@@ -53,5 +53,19 @@ jobs:
             $errors | Format-List
             exit 1
           }
+      - name: Validate GitHub governance plan
+        if: runner.os == 'Windows' && matrix.python == '3.12'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $plan = & ./scripts/Set-JuziGitHubGovernance.ps1 | ConvertFrom-Json
+          $features = @($plan.security.security_and_analysis.PSObject.Properties.Name)
+          if ('advanced_security' -in $features) {
+            throw 'Public repositories must not PATCH advanced_security.'
+          }
+          if ('secret_scanning' -notin $features -or 'secret_scanning_push_protection' -notin $features) {
+            throw 'Governance plan is missing required secret scanning controls.'
+          }
       - name: Run full marketplace preflight
         run: python scripts/juzi_release.py preflight --all --history --require-clean
