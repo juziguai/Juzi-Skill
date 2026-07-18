@@ -26,7 +26,8 @@
 7. 经明确 Git 授权后提交并推送候选。
 8. 等待 CI 全绿。
 9. 显式触发 Release marketplace workflow，生成凭证、annotated tag 和 GitHub Release；stable 发布同时推进 stable 分支。
-10. 本机刷新市场、重装受影响插件并在新任务中证明加载。
+10. stable 推进后显式 dispatch 市场验证与 CodeQL；不能依赖 `GITHUB_TOKEN` 的 push 事件自动触发下游 workflow。
+11. 本机刷新市场、重装受影响插件并在新任务中证明加载。
 
 ## 回滚
 
