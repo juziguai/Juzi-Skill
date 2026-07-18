@@ -45,9 +45,9 @@ try {
   assert.match(html, /\.mini-link,.text-link\{[^}]*min-height:44px/);
   assert.match(html, /input:focus-visible\+\.check-box/);
   assert.match(html, /Array\.isArray\(storedIds\)/);
-  assert.match(html, /const safeTripHref = \(href, external\)/);
-  assert.match(html, /url\.protocol !== "https:"/);
-  assert.doesNotMatch(html, /tripPrimaryLink\.href = href/);
+  assert.match(html, /const tripTargets = Object\.freeze/);
+  assert.match(html, /setTripLink\("days", "查看今天路线"\)/);
+  assert.doesNotMatch(html, /nextStop\.mapUrl/);
   assert.match(html, /--paper:#f4efdf/);
   assert.match(html, /background:#fffaf0/);
   assert.match(html, /START HERE/);
@@ -70,6 +70,7 @@ try {
   assert.equal(clientData.meta.timezone, "Asia/Shanghai");
   assert.equal(clientData.days.length, 3);
   assert.equal(clientData.days[0].stops.length, 3);
+  assert.equal("mapUrl" in clientData.days[0].stops[0], false);
   assert.equal(clientData.budget.modes.length, 2);
   assert.equal(clientData.weather.days.length, 3);
 

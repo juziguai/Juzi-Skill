@@ -671,7 +671,7 @@ function serializeClientData(plan) {
       date: day.date,
       weekday: day.weekday,
       title: day.title,
-      stops: day.stops.map((stop) => ({ time: stop.time, name: stop.name, type: stop.type, mapUrl: stop.mapUrl || "" })),
+      stops: day.stops.map((stop) => ({ time: stop.time, name: stop.name, type: stop.type })),
     })),
     budget: plan.budget,
     weather: plan.weather,

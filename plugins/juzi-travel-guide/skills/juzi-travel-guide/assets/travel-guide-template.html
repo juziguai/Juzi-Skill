@@ -200,30 +200,13 @@
         return { date: now.toISOString().slice(0, 10), minutes: (now.getHours() * 60) + now.getMinutes() };
       }
     };
-    const safeTripHref = (href, external) => {
-      const value = String(href ?? "");
-      if (!external) return /^#[a-z][a-z0-9_-]*$/i.test(value) ? value : "#days";
-      try {
-        const url = new URL(value);
-        if (url.protocol !== "https:") return "#days";
-        return `https://${url.host}${url.pathname}${url.search}${url.hash}`;
-      } catch {
-        return "#days";
-      }
-    };
-    const setTripLink = (href, label, external = false) => {
+    const tripTargets = Object.freeze({ plan: "#plan", live: "#live", days: "#days", sources: "#sources" });
+    const setTripLink = (target, label) => {
       if (!tripPrimaryLink) return;
-      const safeHref = safeTripHref(href, external);
-      const opensExternal = external && safeHref.startsWith("https://");
-      tripPrimaryLink.href = safeHref;
+      tripPrimaryLink.href = tripTargets[target] || tripTargets.days;
       tripPrimaryLink.textContent = label;
-      if (opensExternal) {
-        tripPrimaryLink.target = "_blank";
-        tripPrimaryLink.rel = "noreferrer";
-      } else {
-        tripPrimaryLink.removeAttribute("target");
-        tripPrimaryLink.removeAttribute("rel");
-      }
+      tripPrimaryLink.removeAttribute("target");
+      tripPrimaryLink.removeAttribute("rel");
     };
     const syncTripState = (completed, total) => {
       const clock = currentTripClock();
@@ -239,7 +222,7 @@
         if (tripStatusLabel) tripStatusLabel.textContent = "行前准备";
         if (tripStatusTitle) tripStatusTitle.textContent = daysAway === 0 ? "今天出发" : `距离出发 ${daysAway} 天`;
         if (tripStatusCopy) tripStatusCopy.textContent = remaining ? `还有 ${remaining} 项关键事项待确认，完成后会保存在当前设备。` : "行前清单已完成，出发前再核对天气与官方订单。";
-        setTripLink(remaining ? "#plan" : "#live", remaining ? "继续完成行前清单" : "出发前看天气");
+        setTripLink(remaining ? "plan" : "live", remaining ? "继续完成行前清单" : "出发前看天气");
         return;
       }
 
@@ -252,11 +235,11 @@
         if (nextStop) {
           if (tripStatusTitle) tripStatusTitle.textContent = `${nextStop.time} · ${nextStop.name}`;
           if (tripStatusCopy) tripStatusCopy.textContent = `${nextStop.type}是接下来的安排，打开当天路线可查看缓冲、费用与注意事项。`;
-          setTripLink(nextStop.mapUrl || `#day-${currentDay.day}`, nextStop.mapUrl ? "导航到下一站" : "查看今天路线", Boolean(nextStop.mapUrl));
+          setTripLink("days", "查看今天路线");
         } else {
           if (tripStatusTitle) tripStatusTitle.textContent = `DAY ${currentDay.day} 已走完`;
           if (tripStatusCopy) tripStatusCopy.textContent = "今天的计划已结束，回看路线确认返程、订单和明日第一站。";
-          setTripLink(`#day-${currentDay.day}`, "回看今天路线");
+          setTripLink("days", "回看今天路线");
         }
         return;
       }
@@ -265,14 +248,14 @@
         if (tripStatusLabel) tripStatusLabel.textContent = "行程结束";
         if (tripStatusTitle) tripStatusTitle.textContent = "这趟旅行已完成";
         if (tripStatusCopy) tripStatusCopy.textContent = "攻略仍可离线查看，来源和预算可用于复盘下一次旅行。";
-        setTripLink("#sources", "查看来源与复盘");
+        setTripLink("sources", "查看来源与复盘");
         return;
       }
 
       if (tripStatusLabel) tripStatusLabel.textContent = "行程状态";
       if (tripStatusTitle) tripStatusTitle.textContent = `${startDate} 出发`;
       if (tripStatusCopy) tripStatusCopy.textContent = "日期状态暂时无法匹配，请直接查看逐日路线。";
-      setTripLink("#days", "查看逐日路线");
+      setTripLink("days", "查看逐日路线");
     };
     const syncChecklist = () => {
       checkedIds = checklistInputs.filter((input) => input.checked).map((input) => input.dataset.checkId);
