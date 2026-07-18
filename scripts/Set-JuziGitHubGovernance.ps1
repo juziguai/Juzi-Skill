@@ -110,24 +110,42 @@ try {
             (($payload | ConvertTo-Json -Depth 12) + [Environment]::NewLine),
             [System.Text.UTF8Encoding]::new($false)
         )
-        $existing = @(gh api "repos/$Repository/rulesets" | ConvertFrom-Json | Where-Object name -eq $rulesetName)
+        $rulesetResponse = gh api "repos/$Repository/rulesets" | ConvertFrom-Json
+        if ($LASTEXITCODE -ne 0) { throw 'Ruleset query failed.' }
+        $existing = @($rulesetResponse | Where-Object name -eq $rulesetName)
         if ($existing.Count -gt 1) { throw "Multiple rulesets named $rulesetName exist." }
         if ($existing.Count -eq 1) {
-            & gh api --method PUT "repos/$Repository/rulesets/$($existing[0].id)" --input $payloadPath | Out-Null
+            $rulesetMutation = gh api --method PUT "repos/$Repository/rulesets/$($existing[0].id)" --input $payloadPath | ConvertFrom-Json
         }
         else {
-            & gh api --method POST "repos/$Repository/rulesets" --input $payloadPath | Out-Null
+            $rulesetMutation = gh api --method POST "repos/$Repository/rulesets" --input $payloadPath | ConvertFrom-Json
         }
         if ($LASTEXITCODE -ne 0) { throw 'Ruleset apply failed.' }
-        $final = @(gh api "repos/$Repository/rulesets" | ConvertFrom-Json | Where-Object name -eq $rulesetName)
-        if ($final.Count -ne 1 -or $final[0].enforcement -ne 'active') {
-            throw 'Active ruleset verification failed.'
+        if ($rulesetMutation.name -ne $rulesetName -or $rulesetMutation.enforcement -ne 'active') {
+            throw 'Ruleset mutation response did not verify the active target.'
+        }
+        $finalRuleset = $null
+        $observed = @()
+        foreach ($attempt in 1..5) {
+            $rulesetResponse = gh api "repos/$Repository/rulesets" | ConvertFrom-Json
+            if ($LASTEXITCODE -ne 0) { throw 'Ruleset verification query failed.' }
+            $observed = @($rulesetResponse | Where-Object name -eq $rulesetName)
+            if ($observed.Count -gt 1) { throw "Multiple rulesets named $rulesetName exist." }
+            if ($observed.Count -eq 1 -and $observed[0].enforcement -eq 'active') {
+                $finalRuleset = $observed[0]
+                break
+            }
+            if ($attempt -lt 5) { Start-Sleep -Seconds 2 }
+        }
+        if (-not $finalRuleset) {
+            $observedEnforcement = if ($observed.Count -eq 1) { $observed[0].enforcement } else { 'missing' }
+            throw "Active ruleset verification failed after 5 attempts; count=$($observed.Count) enforcement=$observedEnforcement"
         }
         [ordered]@{
             status = 'passed'
             visibility = 'PUBLIC'
-            rulesetId = $final[0].id
-            enforcement = $final[0].enforcement
+            rulesetId = $finalRuleset.id
+            enforcement = $finalRuleset.enforcement
             advancedSecurity = 'available-public'
             secretScanning = $repositoryState.security_and_analysis.secret_scanning.status
             pushProtection = $repositoryState.security_and_analysis.secret_scanning_push_protection.status
