@@ -61,6 +61,14 @@ class ReleaseError(RuntimeError):
     """Raised for an actionable release gate failure."""
 
 
+def configure_utf8_stdio() -> None:
+    """Keep redirected Windows logs able to represent repository paths and diagnostics."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="backslashreplace")
+
+
 def run(
     args: list[str],
     *,
@@ -68,14 +76,22 @@ def run(
     check: bool = True,
     env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    command_env = os.environ.copy()
+    command_env.update(env or {})
+    if not env or "PYTHONUTF8" not in env:
+        command_env["PYTHONUTF8"] = "1"
+    if not env or "PYTHONIOENCODING" not in env:
+        command_env["PYTHONIOENCODING"] = "utf-8"
     try:
         completed = subprocess.run(
             args,
             cwd=cwd,
             check=False,
             text=True,
+            encoding="utf-8",
+            errors="strict",
             capture_output=True,
-            env=env,
+            env=command_env,
         )
     except OSError as exc:
         raise ReleaseError(f"cannot start command {' '.join(args)}: {exc}") from exc
@@ -681,6 +697,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    configure_utf8_stdio()
     parser = build_parser()
     args = parser.parse_args()
     try:
