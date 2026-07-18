@@ -21,6 +21,20 @@
 !/Juzi-travel-guide/**
 !/juzi-windows-elevation/
 !/juzi-windows-elevation/**
+!/Juzi-arming-thought/
+!/Juzi-arming-thought/**
+!/Juzi-workflows/
+!/Juzi-workflows/**
+!/Juzi-investigation-first/
+!/Juzi-investigation-first/**
+!/Juzi-contradiction-analysis/
+!/Juzi-contradiction-analysis/**
+!/Juzi-concentrate-forces/
+!/Juzi-concentrate-forces/**
+!/Juzi-practice-cognition/
+!/Juzi-practice-cognition/**
+!/Juzi-criticism-self-criticism/
+!/Juzi-criticism-self-criticism/**
 
 # Transient or sensitive content remains excluded even inside allowlisted trees.
 **/.env

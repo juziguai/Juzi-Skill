@@ -25,6 +25,87 @@ SOURCE_MAPPINGS = {
     "juzi-travel-guide": ROOT / "Juzi-travel-guide",
     "juzi-windows-elevation": ROOT / "juzi-windows-elevation",
 }
+PURE_SKILL_SOURCES = {
+    "arming-thought": ROOT / "Juzi-arming-thought",
+    "workflows": ROOT / "Juzi-workflows",
+    "investigation-first": ROOT / "Juzi-investigation-first",
+    "contradiction-analysis": ROOT / "Juzi-contradiction-analysis",
+    "concentrate-forces": ROOT / "Juzi-concentrate-forces",
+    "practice-cognition": ROOT / "Juzi-practice-cognition",
+    "criticism-self-criticism": ROOT / "Juzi-criticism-self-criticism",
+}
+PRODUCTION_SAFETY_CONTRACTS = {
+    ROOT / "Juzi-arming-thought" / "SKILL.md": (
+        "生产副作用入口门",
+        "替代者未就绪前不得释放当前可用基线",
+        "宿主平台的系统、开发者规则与安全约束",
+    ),
+    ROOT / "Juzi-workflows" / "SKILL.md": (
+        "Workflow 4：生产变更与事故恢复",
+        "10 分钟快速验收",
+        "三项缺一不可",
+        "exit code `0`",
+    ),
+    ROOT / "Juzi-investigation-first" / "SKILL.md": (
+        "生产调查的最小充分集",
+        "未观测",
+        "用户手动恢复",
+    ),
+    ROOT / "Juzi-investigation-first" / "investigation-agent-prompt.md": (
+        "生产调查保持只读",
+        "生产基线卡",
+    ),
+    ROOT / "Juzi-contradiction-analysis" / "SKILL.md": (
+        "生产场景的连续性优先规则",
+        "受保护基线",
+    ),
+    ROOT / "Juzi-contradiction-analysis" / "contradiction-mapper-prompt.md": (
+        "生产连续性是硬约束",
+        "生产安全边界",
+    ),
+    ROOT / "Juzi-concentrate-forces" / "SKILL.md": (
+        "生产事故中的集中兵力",
+        "不得因为焦虑而重复运行等价的长门禁",
+    ),
+    ROOT / "Juzi-practice-cognition" / "SKILL.md": (
+        "生产验证的安全阶梯",
+        "UAC 取消",
+        "10 分钟快速验收",
+        "三项缺一不可",
+    ),
+    ROOT / "Juzi-criticism-self-criticism" / "SKILL.md": (
+        "生产事故复盘的最低事实集",
+        "确定性根因",
+        "停机窗口",
+    ),
+    ROOT / "Juzi-criticism-self-criticism" / "review-checklist.md": (
+        "生产安全与事故检查",
+        "永久修复",
+    ),
+    ROOT / "plugins" / "juzi-codex-continuity" / "skills" / "juzi-codex-continuity" / "SKILL.md": (
+        "生产状态与破坏性边界",
+        "破坏性动作预算",
+    ),
+    ROOT / "Juzi-sync-project-docs" / "SKILL.md": (
+        "生产运维语义的真值规则",
+        "exit code `0`",
+        "10 分钟快速验收",
+    ),
+    ROOT / "juzi-windows-elevation" / "SKILL.md": (
+        "Production Safety Gate",
+        "one-time attempt",
+        "real smoke traffic",
+    ),
+    ROOT / "juzi-windows-elevation" / "references" / "elevation-protocol.md": (
+        "An untested failure path may not be exercised for the first time against production",
+        "user-restored Runtime/PID",
+    ),
+    ROOT / "juzi-codex-skill-lifecycle" / "SKILL.md": (
+        "Pure Skill Installation Gate",
+        "untrusted mount point",
+        "hash-verified real copy",
+    ),
+}
 IGNORED_TREE_PARTS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
 
 
@@ -178,8 +259,61 @@ def validate_plugin(entry: dict[str, Any], validation: Validation) -> None:
             )
 
 
+def validate_pure_skills(validation: Validation) -> None:
+    for expected_name, source_root in PURE_SKILL_SOURCES.items():
+        skill_file = source_root / "SKILL.md"
+        validation.require(source_root.is_dir(), f"{expected_name}: canonical pure Skill source is missing")
+        validation.require(skill_file.is_file(), f"{expected_name}: canonical SKILL.md is missing")
+        if not skill_file.is_file():
+            continue
+        validation.require(
+            frontmatter_name(skill_file, validation) == expected_name,
+            f"{expected_name}: frontmatter name does not match the installed identifier",
+        )
+        symlinks = [path.relative_to(ROOT).as_posix() for path in source_root.rglob("*") if path.is_symlink()]
+        validation.require(not symlinks, f"{expected_name}: canonical source contains symlinks")
+
+
+def validate_production_safety_contracts(validation: Validation) -> None:
+    for path, required_phrases in PRODUCTION_SAFETY_CONTRACTS.items():
+        validation.require(path.is_file(), f"missing safety contract file: {path.relative_to(ROOT)}")
+        if not path.is_file():
+            continue
+        content = path.read_text(encoding="utf-8")
+        for phrase in required_phrases:
+            validation.require(
+                phrase in content,
+                f"{path.relative_to(ROOT)}: missing production safety contract phrase {phrase!r}",
+            )
+
+    concentrate_path = ROOT / "Juzi-concentrate-forces" / "SKILL.md"
+    if concentrate_path.is_file():
+        concentrate = concentrate_path.read_text(encoding="utf-8")
+        validation.require("TodoWrite" not in concentrate, "concentrate-forces must not require unavailable TodoWrite")
+
+    continuity_root = ROOT / "plugins" / "juzi-codex-continuity"
+    skill_templates = continuity_root / "skills" / "juzi-codex-continuity" / "templates"
+    plugin_templates = continuity_root / "templates"
+    for name in ("ACTIVE_TASK.md", "compact-prompt.md"):
+        skill_template = skill_templates / name
+        plugin_template = plugin_templates / name
+        validation.require(skill_template.is_file(), f"juzi-codex-continuity: missing Skill template: {name}")
+        validation.require(plugin_template.is_file(), f"juzi-codex-continuity: missing plugin template: {name}")
+        if skill_template.is_file() and plugin_template.is_file():
+            validation.require(
+                skill_template.read_bytes() == plugin_template.read_bytes(),
+                f"juzi-codex-continuity: duplicated template drifted: {name}",
+            )
+    active_template_path = skill_templates / "ACTIVE_TASK.md"
+    if active_template_path.is_file():
+        active_template = active_template_path.read_text(encoding="utf-8")
+        validation.require("生产状态与破坏性边界" in active_template, "continuity template lacks production boundary state")
+
+
 def main() -> int:
     validation = Validation()
+    validate_pure_skills(validation)
+    validate_production_safety_contracts(validation)
     validation.require(MARKETPLACE_PATH.is_file(), "missing .agents/plugins/marketplace.json")
     if not MARKETPLACE_PATH.is_file():
         for error in validation.errors:

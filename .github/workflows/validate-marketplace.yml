@@ -15,5 +15,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate plugin catalog and packaged Skills
+      - name: Validate plugin catalog, pure Skills, and production safety contracts
         run: python scripts/validate_marketplace.py
+      - name: Smoke test documentation scanner without Git tags
+        shell: pwsh
+        run: ./scripts/Test-DocSyncScanner.ps1

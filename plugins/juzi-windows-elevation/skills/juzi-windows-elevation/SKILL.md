@@ -1,6 +1,6 @@
 ---
 name: juzi-windows-elevation
-description: Use when a Windows task requires administrator privileges, UAC approval, system configuration changes, environment repair, or verification of a CodexElevation request. Enforces reviewed scripts, hash-locked one-time elevation, scoped series authorization, and non-admin verification.
+description: Use when a Windows task requires administrator privileges, UAC approval, production service control, system configuration changes, or verification of a CodexElevation request. Enforces pre-production failure tests, protected baselines, hash-locked one-time elevation, and real non-admin chain verification.
 ---
 
 # Juzi Windows Elevation
@@ -9,9 +9,19 @@ description: Use when a Windows task requires administrator privileges, UAC appr
 
 1. Determine whether the task can finish as the normal user. Do not request elevation for convenience.
 2. Read [references/elevation-protocol.md](references/elevation-protocol.md) before creating or executing any elevation request.
-3. Create a reviewed `.ps1` with the smallest system scope, then use `CodexElevation`; never use credentials, scheduled tasks, services, or persistent admin sessions to bypass UAC.
-4. Before execution, obtain the required user confirmation unless a still-valid, explicitly scoped series authorization covers the action; invoke the approved request with `Invoke-CodexElevationRequest` exactly once.
-5. After execution, read the actual receipt, verify from a new non-admin process, run the relevant smoke test, and confirm no request remains pending.
+3. Classify every administrator action as read-only, reversible, or destructive. `stop`, `restart`, `kill`, service replacement, deletion and route/port changes are destructive.
+4. For production-connected actions, record the protected baseline, user impact, standby evidence, stop condition, rollback/rescue path and one-time destructive-action budget. A user-restored Runtime/PID is protected until a verified replacement exists.
+5. Prove the reviewed `.ps1` outside production, including stop/start/cleanup/wait failures, UAC cancellation and partial state. The script must fail nonzero, preserve useful error output, and keep logging/telemetry failures from blocking the critical control path.
+6. Create the smallest hash-locked `CodexElevation` request; never use credentials, scheduled tasks, services or persistent admin sessions to bypass UAC. Obtain required confirmation unless a valid explicitly scoped series authorization covers it, then invoke the approved request exactly once.
+7. After execution, treat the receipt and exit code only as execution evidence. From a new non-admin process verify the relevant service, parent/child processes, ports, Runtime API, error logs and real smoke traffic, then confirm no request remains pending.
+
+## Production Safety Gate
+
+- Never use a production service to discover whether a new elevation script handles failure correctly.
+- Do not release the current usable baseline before standby or an independently proven rescue path is ready.
+- Failure, cancellation or UAC denial consumes the one-time attempt. Stop and re-investigate; do not issue another stop/restart/kill request automatically.
+- If a user manually restores service, freeze that state and switch to read-only verification until a safer replacement plan is ready.
+- “UAC closed”, “receipt written” and exit code `0` are not success criteria.
 
 ## Canonical Paths
 
@@ -21,4 +31,4 @@ description: Use when a Windows task requires administrator privileges, UAC appr
 
 ## Scope Rule
 
-Treat credentials, security software, accounts/groups, partitions, drivers, startup, services, recovery, deletion of user data, and security-disable actions as separate confirmation boundaries even during a series authorization.
+Treat credentials, security software, accounts/groups, partitions, drivers, startup, services, recovery, deletion of user data, and security-disable actions as separate confirmation boundaries even during a series authorization. A series authorization does not remove protected-baseline, failure-injection, one-attempt or non-admin acceptance requirements.

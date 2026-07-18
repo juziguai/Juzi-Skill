@@ -1,18 +1,18 @@
 {
   "name": "juzi-codex-skill-lifecycle",
-  "version": "0.1.0+codex.20260715062851",
-  "description": "Lifecycle controls for Juzi Skills, plugins, and MCP integrations.",
+  "version": "0.1.0+codex.20260718162624",
+  "description": "Lifecycle controls with verified installation and loading proof for Juzi capabilities.",
   "author": {
     "name": "juzi"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Juzi Codex Skill Lifecycle",
-    "shortDescription": "Validate and manage Juzi capabilities in Codex.",
-    "longDescription": "A lifecycle workflow for creating, installing, updating, and validating Juzi Skills, plugins, and MCP integrations.",
+    "shortDescription": "Validate installation mode and actual Skill loading.",
+    "longDescription": "A lifecycle workflow with canonical sources, Junction-or-copy fallback, hash verification, and new-task loading proof.",
     "developerName": "juzi",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Validate and install a Juzi Codex capability."
+    "defaultPrompt": "Validate and install a Juzi Codex capability with loading proof and safe fallback."
   }
 }

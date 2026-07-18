@@ -1,18 +1,18 @@
 {
   "name": "juzi-windows-elevation",
-  "version": "0.1.0+codex.20260715062853",
-  "description": "Auditable Windows elevation workflow for Codex.",
+  "version": "0.1.0+codex.20260718162624",
+  "description": "Auditable Windows elevation and protected production cutover workflow for Codex.",
   "author": {
     "name": "juzi"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Juzi Windows Elevation",
-    "shortDescription": "Run approved Windows elevation workflows safely.",
-    "longDescription": "A reviewed, hash-locked UAC elevation protocol with explicit authorization and non-admin verification.",
+    "shortDescription": "Run UAC changes with protected baselines and real verification.",
+    "longDescription": "A failure-tested, hash-locked UAC protocol with one-time authorization, rollback, and non-admin real-chain verification.",
     "developerName": "juzi",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Prepare a reviewed Windows elevation request."
+    "defaultPrompt": "Prepare a failure-tested Windows elevation request with a protected baseline, rollback, and non-admin verification."
   }
 }

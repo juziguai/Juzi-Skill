@@ -6,12 +6,26 @@
 
 | 插件 | 用途 |
 |---|---|
-| `juzi-codex-continuity` | 使用 `.codex/ACTIVE_TASK.md` 保存长任务的可验证恢复状态。 |
-| `juzi-codex-skill-lifecycle` | 创建、验证、安装和更新 Juzi Skill、插件与 MCP 能力。 |
+| `juzi-codex-continuity` | 使用 `.codex/ACTIVE_TASK.md` 保存长任务、受保护生产基线和破坏性动作边界。 |
+| `juzi-codex-skill-lifecycle` | 创建、验证并以 Junction 或哈希一致副本安装 Juzi 能力，最后用新任务证明实际加载。 |
 | `juzi-team-lead` | 在用户明确要求委派或并行工作时协调多 Agent 实施与验收。 |
-| `juzi-windows-elevation` | 通过审阅脚本、哈希锁和 UAC 完成可审计的 Windows 管理员操作。 |
-| `juzi-sync-project-docs` | 根据真实版本、Git 和代码变更发现并修正文档漂移。 |
+| `juzi-windows-elevation` | 通过失败注入、受保护基线、哈希锁和非管理员复验完成可审计的 Windows 管理员操作。 |
+| `juzi-sync-project-docs` | 根据真实版本、Git、代码变更和生产运维语义发现并修正文档漂移。 |
 | `juzi-travel-guide` | 调研实时交通、住宿、天气和玩法，生成可离线交付的互动旅游攻略网页。 |
+
+## 本地纯 Skill 源码
+
+| 规范源码 | 安装标识 | 生产安全职责 |
+|---|---|---|
+| `Juzi-arming-thought` | `arming-thought` | 任务入口的副作用分级和安全路由 |
+| `Juzi-workflows` | `workflows` | 生产预检、standby、事务化切换、回滚和救援 |
+| `Juzi-investigation-first` | `investigation-first` | 实时基线、用户影响、回滚点和未知项 |
+| `Juzi-contradiction-analysis` | `contradiction-analysis` | 将服务连续性作为生产变更的优先约束 |
+| `Juzi-concentrate-forces` | `concentrate-forces` | 保护可用基线，禁止并行扰动和重复重门禁 |
+| `Juzi-practice-cognition` | `practice-cognition` | 低爆炸半径验证、失败注入和 10 分钟重大变更验收 |
+| `Juzi-criticism-self-criticism` | `criticism-self-criticism` | 事故影响、根因、未知项和永久防复发机制 |
+
+这些纯 Skill 先用一个 canary 验证当前 Codex Loader 是否接受 Junction；若出现未信任挂载点或新任务缺失 Skill，则回退为逐文件 SHA-256 一致的真实安装副本。无论安装模式如何，规范源码始终是唯一编辑入口。
 
 ## 添加市场
 
@@ -44,7 +58,8 @@ codex plugin add juzi-travel-guide@juzi-skill
 .agents/plugins/marketplace.json   # Codex 市场目录
 plugins/<plugin>/                  # Codex 实际打包和安装的插件源码
 <Juzi Skill 源码>/                 # 本仓直接维护的规范源码
-scripts/validate_marketplace.py    # 跨平台市场与源码漂移校验
+Juzi-<pure-skill>/                 # 纯 Skill 规范源码，canary 后选择 Junction 或哈希副本
+scripts/validate_marketplace.py    # 市场、源码漂移与生产安全契约校验
 .github/workflows/                 # GitHub 持续验证
 ```
 
@@ -52,12 +67,13 @@ scripts/validate_marketplace.py    # 跨平台市场与源码漂移校验
 
 ## 开发与发布
 
-1. 只在规范源码或独立上游仓库中修改 Skill。
-2. 将 Skill 以真实文件同步到 `plugins/<plugin>/skills/<skill>/`，不要使用 Junction。
-3. 运行对应 Skill 的定向测试和本仓验证器：
+1. 只在规范源码或独立上游仓库中修改 Skill；纯 Skill 不直接编辑用户安装目录。
+2. 插件 Skill 以真实文件同步到 `plugins/<plugin>/skills/<skill>/`，不要使用 Junction；纯 Skill 经 canary 验证后选择 Junction 或哈希一致真实副本。
+3. 运行对应 Skill 的定向测试和本仓验证器；验证器同时检查生产变更安全契约：
 
    ```powershell
    python scripts/validate_marketplace.py
+   & .\scripts\Test-DocSyncScanner.ps1
    ```
 
 4. 使用 Codex 官方 plugin creator 更新 cachebuster 并验证插件。

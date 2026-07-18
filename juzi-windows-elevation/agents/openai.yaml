@@ -1,4 +1,4 @@
 interface:
   display_name: "Juzi Windows Elevation"
-  short_description: "Safe Windows UAC workflow"
-  default_prompt: "Use the CodexElevation workflow for this Windows administrator task."
+  short_description: "Safe Windows UAC and production cutover workflow"
+  default_prompt: "Use the CodexElevation workflow with failure injection, a protected baseline, one-time execution, rollback, and non-admin real-chain verification."

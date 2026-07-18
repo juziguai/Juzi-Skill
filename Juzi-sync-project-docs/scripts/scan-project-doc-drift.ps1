@@ -21,8 +21,27 @@ function Get-Utf8Text {
 
 function Invoke-GitText {
     param([Parameter(Mandatory = $true)][string[]]$Arguments)
-    $output = & git -C $script:ResolvedRoot @Arguments 2>$null
-    if ($LASTEXITCODE -ne 0) {
+    Get-Command git -ErrorAction Stop | Out-Null
+    $previousErrorActionPreference = $ErrorActionPreference
+    $nativePreference = Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue
+    if ($nativePreference) {
+        $previousNativePreference = $nativePreference.Value
+    }
+    try {
+        $ErrorActionPreference = 'Continue'
+        if ($nativePreference) {
+            Set-Variable -Name PSNativeCommandUseErrorActionPreference -Value $false
+        }
+        $output = & git -C $script:ResolvedRoot @Arguments 2>$null
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+        if ($nativePreference) {
+            Set-Variable -Name PSNativeCommandUseErrorActionPreference -Value $previousNativePreference
+        }
+    }
+    if ($exitCode -ne 0) {
         return $null
     }
     return @($output)
@@ -78,16 +97,27 @@ foreach ($probe in $versionProbes) {
 $canonicalVersion = if ($versionSources.Count -gt 0) { $versionSources[0].version } else { $null }
 $branch = (Invoke-GitText @('branch', '--show-current') | Select-Object -First 1)
 $status = @(Invoke-GitText @('status', '--porcelain'))
-$latestTag = if ($SinceTag) { $SinceTag } else { (Invoke-GitText @('describe', '--tags', '--abbrev=0') | Select-Object -First 1) }
+$latestTag = $null
+if ($SinceTag) {
+    $latestTag = $SinceTag.Trim()
+}
+else {
+    $latestTagCandidate = Invoke-GitText @('describe', '--tags', '--abbrev=0') | Select-Object -First 1
+    if ($latestTagCandidate) {
+        $latestTag = ([string]$latestTagCandidate).Trim()
+    }
+}
 $range = if ($latestTag) { "$latestTag..HEAD" } else { 'HEAD' }
 
 $commitLines = @(Invoke-GitText @('log', "--max-count=$CommitLimit", '--date=short', '--pretty=format:%H%x1f%h%x1f%ad%x1f%an%x1f%s', $range))
-$commits = foreach ($line in $commitLines) {
-    $parts = $line -split [char]0x1f, 5
-    if ($parts.Count -eq 5) {
-        [pscustomobject]@{ hash = $parts[0]; short_hash = $parts[1]; date = $parts[2]; author = $parts[3]; subject = $parts[4] }
+$commits = @(
+    foreach ($line in $commitLines) {
+        $parts = $line -split [char]0x1f, 5
+        if ($parts.Count -eq 5) {
+            [pscustomobject]@{ hash = $parts[0]; short_hash = $parts[1]; date = $parts[2]; author = $parts[3]; subject = $parts[4] }
+        }
     }
-}
+)
 
 $docPaths = @(Invoke-GitText @('ls-files', '--', '*.md', '*.mdx', '*.rst', '*.adoc', 'README*', 'CHANGELOG*')) |
     Where-Object { $_ -and $_ -notmatch '(^|/)(node_modules|dist|build|vendor)/' } |
