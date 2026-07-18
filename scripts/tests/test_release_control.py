@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest import mock
 
 
 SCRIPTS = Path(__file__).resolve().parents[1]
@@ -15,6 +16,8 @@ from juzi_release import (  # noqa: E402
     ReleaseError,
     affected_project_ids,
     atomic_replace_tree,
+    configure_utf8_stdio,
+    run,
     scan_secret_bytes,
 )
 from marketplace_registry import load_registry, marketplace_document, projects, tree_hashes  # noqa: E402
@@ -54,6 +57,26 @@ class SecretScanTests(unittest.TestCase):
 
     def test_normal_documentation_text_is_not_a_secret(self) -> None:
         self.assertEqual(scan_secret_bytes(b"Use an environment variable named API_TOKEN."), [])
+
+
+class EncodingTests(unittest.TestCase):
+    def test_run_decodes_utf8_when_windows_locale_is_cp1252(self) -> None:
+        command = [
+            sys.executable,
+            "-c",
+            "import sys; sys.stdout.buffer.write('中文路径'.encode('utf-8'))",
+        ]
+        with mock.patch("subprocess._text_encoding", return_value="cp1252"):
+            completed = run(command)
+        self.assertEqual(completed.stdout, "中文路径")
+
+    def test_configure_utf8_stdio_reconfigures_both_streams(self) -> None:
+        stdout = mock.Mock()
+        stderr = mock.Mock()
+        with mock.patch.object(sys, "stdout", stdout), mock.patch.object(sys, "stderr", stderr):
+            configure_utf8_stdio()
+        stdout.reconfigure.assert_called_once_with(encoding="utf-8", errors="backslashreplace")
+        stderr.reconfigure.assert_called_once_with(encoding="utf-8", errors="backslashreplace")
 
 
 class AtomicSyncTests(unittest.TestCase):
