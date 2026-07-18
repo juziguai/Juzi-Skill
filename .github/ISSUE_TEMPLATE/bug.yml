@@ -1,0 +1,30 @@
+name: Bug report
+description: 报告可复现的 Skill、插件或市场问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: project
+    attributes:
+      label: 项目
+      description: 插件或纯 Skill id
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 最小复现
+      description: 不要包含 Token、Cookie、请求正文或本机隐私信息
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期与实际
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 脱敏证据
+      description: 版本、Tag、Git SHA、安装与加载状态
