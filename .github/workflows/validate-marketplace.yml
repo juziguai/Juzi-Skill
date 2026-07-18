@@ -67,5 +67,9 @@ jobs:
           if ('secret_scanning' -notin $features -or 'secret_scanning_push_protection' -notin $features) {
             throw 'Governance plan is missing required secret scanning controls.'
           }
+      - name: Run GitHub governance failure injection
+        if: runner.os == 'Windows' && matrix.python == '3.12'
+        shell: pwsh
+        run: ./scripts/Test-JuziGitHubGovernance.ps1
       - name: Run full marketplace preflight
         run: python scripts/juzi_release.py preflight --all --history --require-clean
