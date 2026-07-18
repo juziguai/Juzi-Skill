@@ -200,11 +200,24 @@
         return { date: now.toISOString().slice(0, 10), minutes: (now.getHours() * 60) + now.getMinutes() };
       }
     };
+    const safeTripHref = (href, external) => {
+      const value = String(href ?? "");
+      if (!external) return /^#[a-z][a-z0-9_-]*$/i.test(value) ? value : "#days";
+      try {
+        const url = new URL(value);
+        if (url.protocol !== "https:") return "#days";
+        return `https://${url.host}${url.pathname}${url.search}${url.hash}`;
+      } catch {
+        return "#days";
+      }
+    };
     const setTripLink = (href, label, external = false) => {
       if (!tripPrimaryLink) return;
-      tripPrimaryLink.href = href;
+      const safeHref = safeTripHref(href, external);
+      const opensExternal = external && safeHref.startsWith("https://");
+      tripPrimaryLink.href = safeHref;
       tripPrimaryLink.textContent = label;
-      if (external) {
+      if (opensExternal) {
         tripPrimaryLink.target = "_blank";
         tripPrimaryLink.rel = "noreferrer";
       } else {

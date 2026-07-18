@@ -45,6 +45,9 @@ try {
   assert.match(html, /\.mini-link,.text-link\{[^}]*min-height:44px/);
   assert.match(html, /input:focus-visible\+\.check-box/);
   assert.match(html, /Array\.isArray\(storedIds\)/);
+  assert.match(html, /const safeTripHref = \(href, external\)/);
+  assert.match(html, /url\.protocol !== "https:"/);
+  assert.doesNotMatch(html, /tripPrimaryLink\.href = href/);
   assert.match(html, /--paper:#f4efdf/);
   assert.match(html, /background:#fffaf0/);
   assert.match(html, /START HERE/);
@@ -115,6 +118,15 @@ try {
     /必须是有效的 IANA 时区/,
   );
 
+  const unsafeMapPlan = structuredClone(plan);
+  unsafeMapPlan.days[0].stops[0].mapUrl = "javascript:alert(document.domain)";
+  const unsafeMapPath = path.join(temporaryDirectory, "unsafe-map.json");
+  await writeFile(unsafeMapPath, JSON.stringify(unsafeMapPlan), "utf8");
+  await assert.rejects(
+    buildGuide({ inputPath: unsafeMapPath, validateOnly: true }),
+    /只允许 http\/https URL/,
+  );
+
   const overBudgetPlan = structuredClone(plan);
   overBudgetPlan.meta.assetBudget.maxImageKiB = 0.01;
   const overBudgetPath = path.join(temporaryDirectory, "over-budget.json");
@@ -132,6 +144,7 @@ try {
     weatherAlignmentRejection: "ok",
     invalidDateRejection: "ok",
     invalidTimezoneRejection: "ok",
+    unsafeMapRejection: "ok",
     budgetRejection: "ok",
     outputKiB: first.report.outputKiB,
     sha256: first.report.sha256,
