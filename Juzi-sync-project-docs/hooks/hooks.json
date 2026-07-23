@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\Tools\\AI\\Juzi-Skill\\Juzi-sync-project-docs\\scripts\\codex-doc-sync-hook.ps1\" -Event UserPromptSubmit",
+            "command": "node.exe \"D:\\Tools\\AI\\Juzi-Skill\\Juzi-sync-project-docs\\scripts\\codex-doc-sync-dispatch.cjs\" --event UserPromptSubmit",
             "timeout": 5
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"D:\\Tools\\AI\\Juzi-Skill\\Juzi-sync-project-docs\\scripts\\codex-doc-sync-hook.ps1\" -Event Stop",
+            "command": "node.exe \"D:\\Tools\\AI\\Juzi-Skill\\Juzi-sync-project-docs\\scripts\\codex-doc-sync-dispatch.cjs\" --event Stop",
             "timeout": 10
           }
         ]

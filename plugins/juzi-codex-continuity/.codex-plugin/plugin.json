@@ -1,6 +1,6 @@
 {
   "name": "juzi-codex-continuity",
-  "version": "0.1.0+codex.20260718162624",
+  "version": "0.1.0+codex.20260724020514",
   "description": "File-based continuity checkpoints for Codex tasks.",
   "author": {
     "name": "juzi"

@@ -1,11 +1,11 @@
 ---
 name: arming-thought
 description: |
-  触发：在每次新的顶层对话开始时自动调用，用于建立“实事求是”的总原则、识别生产副作用，并在明确适用时为后续任务选择下游 skill；如果你是被派遣执行单一具体任务的子 agent，则跳过此 skill。
-  English: Trigger at the start of each new top-level conversation to establish the core methodology, identify production side effects, and select downstream skills only when clearly useful. Skip this skill when you are a delegated sub-agent handling a narrow, concrete task.
+  触发：仅在新的顶层复杂任务（L2/L3）需要生产副作用分级、事实调查或下游方法论路由时调用。明确跳过 L0/L1，包括问答、解释、单命令只读查询、本机文件搜索、已指定工具的直接调用和单文件小改；子 agent 也跳过。
+  English: Use only for new top-level complex L2/L3 tasks that need production-side-effect classification, factual investigation, or downstream methodology routing. Skip L0/L1 questions, explanations, single-command read-only queries, local file searches, direct calls with a user-specified tool, single-file small edits, and delegated subagents.
 ---
 
-> **子 agent：直接跳过此 skill。** 本 skill 已在 description 字段中注明了跳过条件；此处仅作可读性提示。
+> **快速路径：** L0/L1 与子 agent 直接跳过本 skill；不要为了确认“是否该跳过”而读取本文件。
 
 # 武装思想
 

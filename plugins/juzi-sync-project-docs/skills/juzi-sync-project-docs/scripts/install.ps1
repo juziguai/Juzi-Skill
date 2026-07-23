@@ -105,6 +105,38 @@ function Remove-OwnHooks {
     return $changed
 }
 
+function Remove-OwnHookScripts {
+    param(
+        [Parameter(Mandatory = $true)][object]$Target,
+        [Parameter(Mandatory = $true)][string]$SourceRoot
+    )
+    $sourcePrefix = [System.IO.Path]::GetFullPath($SourceRoot).TrimEnd('\')
+    $ownedNames = @('codex-doc-sync-hook.ps1', 'codex-doc-sync-dispatch.cjs')
+    $changed = $false
+    foreach ($eventProperty in @($Target.hooks.PSObject.Properties)) {
+        $remaining = @()
+        foreach ($group in @($eventProperty.Value)) {
+            $owned = @($group.hooks | Where-Object {
+                $command = [string]$_.command
+                $command.IndexOf($sourcePrefix, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+                    @($ownedNames | Where-Object { $command.IndexOf($_, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 }).Count -gt 0
+            })
+            if ($owned.Count -gt 0) {
+                $changed = $true
+                continue
+            }
+            $remaining += $group
+        }
+        if ($remaining.Count -eq 0) {
+            $Target.hooks.PSObject.Properties.Remove($eventProperty.Name)
+        }
+        else {
+            $eventProperty.Value = @($remaining)
+        }
+    }
+    return $changed
+}
+
 function Test-IsOurJunction {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -157,7 +189,11 @@ if ($Mode -eq 'Install') {
         $isInstalled = $true
     }
 
+    $hooksChanged = Remove-OwnHookScripts -Target $globalHooks -SourceRoot $sourceRoot
     if (Merge-OwnHooks -Target $globalHooks -Source $sourceHooks) {
+        $hooksChanged = $true
+    }
+    if ($hooksChanged) {
         if (Test-Path -LiteralPath $globalHooksPath -PathType Leaf) {
             $backupPath = "$globalHooksPath.bak-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
             Copy-Item -LiteralPath $globalHooksPath -Destination $backupPath
@@ -174,7 +210,10 @@ if ($Mode -eq 'Install') {
     exit 0
 }
 
-$hooksChanged = Remove-OwnHooks -Target $globalHooks -Source $sourceHooks
+$hooksChanged = Remove-OwnHookScripts -Target $globalHooks -SourceRoot $sourceRoot
+if (Remove-OwnHooks -Target $globalHooks -Source $sourceHooks) {
+    $hooksChanged = $true
+}
 if ($hooksChanged) {
     if (Test-Path -LiteralPath $globalHooksPath -PathType Leaf) {
         $backupPath = "$globalHooksPath.bak-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
@@ -183,7 +222,7 @@ if ($hooksChanged) {
     Write-Utf8Text -Path $globalHooksPath -Text ($globalHooks | ConvertTo-Json -Depth 12)
 }
 if (Test-IsOurJunction -Path $targetSkillPath -ExpectedTarget $sourceRoot) {
-    Remove-Item -LiteralPath $targetSkillPath -Force
+    [System.IO.Directory]::Delete($targetSkillPath)
 }
 
 [pscustomobject]@{

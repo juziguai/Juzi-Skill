@@ -313,6 +313,52 @@ def validate_production_safety_contracts(validation: Validation) -> None:
     if concentrate.is_file():
         validation.require("TodoWrite" not in concentrate.read_text(encoding="utf-8"), "concentrate-forces must not require TodoWrite")
     continuity = ROOT / "plugins" / "juzi-codex-continuity"
+    continuity_skill = continuity / "skills" / "juzi-codex-continuity" / "SKILL.md"
+    validation.require(continuity_skill.is_file(), "juzi-codex-continuity: missing SKILL.md")
+    if continuity_skill.is_file():
+        continuity_text = continuity_skill.read_text(encoding="utf-8")
+        trigger_heading = "## 触发判定"
+        gate_heading = "## 初始化门禁（必须最先执行）"
+        startup_heading = "## 启动或恢复"
+        validation.require(trigger_heading in continuity_text, "juzi-codex-continuity: missing trigger decision")
+        validation.require(gate_heading in continuity_text, "juzi-codex-continuity: missing initialization gate")
+        validation.require(
+            trigger_heading in continuity_text
+            and gate_heading in continuity_text
+            and continuity_text.index(trigger_heading) < continuity_text.index(gate_heading),
+            "juzi-codex-continuity: trigger decision must precede initialization gate",
+        )
+        validation.require(
+            gate_heading in continuity_text
+            and startup_heading in continuity_text
+            and continuity_text.index(gate_heading) < continuity_text.index(startup_heading),
+            "juzi-codex-continuity: initialization gate must precede startup workflow",
+        )
+        validation.require(
+            "不得先继续工作、执行到中途再补建" in continuity_text,
+            "juzi-codex-continuity: missing late-creation prohibition",
+        )
+        for phrase in (
+            "## 任务状态机",
+            "`active`",
+            "`waiting_user`",
+            "`blocked`",
+            "`complete`",
+            "必须且只能写 `NONE`",
+            "建议不等于授权",
+            "状态文件不是追加式日志",
+            "不得擅自修改 `.gitignore`",
+            "普通问答、解释、单命令只读查询",
+            "按 `任务状态` 分流",
+            "## 权限与事实分层",
+            "状态文件和 Goal 都不是",
+            "## 字段更新矩阵",
+            "十个顶级栏目必须全部显式初始化",
+            "每个检查点都要复核控制三元组",
+            "初始化状态、初始化时间和触发原因在创建后保持不变",
+            "| 完成任务 |",
+        ):
+            validation.require(phrase in continuity_text, f"juzi-codex-continuity: missing core protocol {phrase!r}")
     for name in ("ACTIVE_TASK.md", "compact-prompt.md"):
         skill_template = continuity / "skills" / "juzi-codex-continuity" / "templates" / name
         plugin_template = continuity / "templates" / name
@@ -320,6 +366,23 @@ def validate_production_safety_contracts(validation: Validation) -> None:
         validation.require(plugin_template.is_file(), f"juzi-codex-continuity: missing plugin template {name}")
         if skill_template.is_file() and plugin_template.is_file():
             validation.require(skill_template.read_bytes() == plugin_template.read_bytes(), f"juzi-codex-continuity: duplicated template drifted: {name}")
+    active_task_template = continuity / "skills" / "juzi-codex-continuity" / "templates" / "ACTIVE_TASK.md"
+    if active_task_template.is_file():
+        active_task_text = active_task_template.read_text(encoding="utf-8")
+        validation.require(
+            active_task_text.startswith("<!-- 初始化门禁："),
+            "juzi-codex-continuity: ACTIVE_TASK template must lead with the initialization gate",
+        )
+        validation.require(
+            "<!-- 字段规则：创建/接管时显式初始化全部十个栏目" in active_task_text,
+            "juzi-codex-continuity: ACTIVE_TASK template missing field-update rule",
+        )
+        for field in ("任务状态", "初始化状态", "初始化时间", "触发原因", "建议"):
+            validation.require(field in active_task_text, f"juzi-codex-continuity: ACTIVE_TASK template missing {field}")
+        validation.require(
+            "complete：必须且只能写 NONE" in active_task_text,
+            "juzi-codex-continuity: ACTIVE_TASK template missing terminal NEXT_ACTION rule",
+        )
 
 
 def validate_repository_governance(registry: dict[str, Any], validation: Validation) -> None:
